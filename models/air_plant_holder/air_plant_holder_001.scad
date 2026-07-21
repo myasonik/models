@@ -1,9 +1,10 @@
 // Air Plant Holder — Double-Diamond Wireframe Cage
 // For the tall Tillandsia (caput-medusae type): plant ~135mm tall, bulb ~40mm wide
 //
-// Two stacked diamonds accentuate the plant's height. The cage only exists at
-// the back and around the lower bulb area — the front above the bulb is fully
-// open. Flat base plate for table placement.
+// Two stacked diamonds accentuate the plant's height. The full silhouette is a
+// 3D cage: identical front and back wireframes joined by depth struts. No solid
+// faces, so the plant shows through the big front diamond opening. Flat base
+// plate for table placement.
 
 $fn = 32;
 
@@ -33,7 +34,7 @@ module strut(p1, p2) {
     }
 }
 
-// interpolate between two 2D silhouette points
+// interpolate between two values
 function lerp(a, b, t) = a + (b - a) * t;
 
 // ---- Parts ----
@@ -45,22 +46,30 @@ module base() {
     }
 }
 
-// Lower diamond cage: full wireframe front + back, holds the bulb
-module lower_cage() {
-    for (y = [yF, yB]) {
-        B  = [  0, y, zB];
-        L1 = [-w1, y, z1];  R1 = [ w1, y, z1];
-        WL = [-ww, y, zw];  WR = [ ww, y, zw];
+// Full double-diamond wireframe outline in a given y plane
+module frame(y) {
+    B  = [  0, y, zB];
+    L1 = [-w1, y, z1];  R1 = [ w1, y, z1];
+    WL = [-ww, y, zw];  WR = [ ww, y, zw];
+    L2 = [-w2, y, z2];  R2 = [ w2, y, z2];
+    T  = [  0, y, zT];
 
-        strut(B,  L1);  strut(B,  R1);   // V bottom
-        strut(L1, WL);  strut(R1, WR);   // up to waist
-        strut(WL, WR);                   // waist bar
-    }
-    // front-to-back connectors at the diamond's corners
-    for (p = [[-w1, z1], [w1, z1], [-ww, zw], [ww, zw]])
+    strut(B,  L1);  strut(B,  R1);   // lower diamond V
+    strut(L1, WL);  strut(R1, WR);   // up to waist
+    strut(WL, WR);                   // waist bar
+    strut(WL, L2);  strut(WR, R2);   // upper diamond
+    strut(L2, T);   strut(R2, T);    // up to apex
+}
+
+// Front-to-back struts at every silhouette corner
+module connectors() {
+    for (p = [[-w1, z1], [w1, z1], [-ww, zw], [ww, zw],
+              [-w2, z2], [w2, z2], [0, zT]])
         strut([p[0], yF, p[1]], [p[0], yB, p[1]]);
+}
 
-    // cradle ribs: two longitudinal struts low in the V to support the bulb
+// Two longitudinal struts low in the V that the bulb rests on
+module cradle_ribs() {
     for (s = [-1, 1]) {
         x = lerp(0, s*w1, 0.4);
         z = lerp(zB, z1, 0.4);
@@ -68,24 +77,17 @@ module lower_cage() {
     }
 }
 
-// Upper diamond: back plane only, so the front stays fully open
-module upper_cage() {
-    WLb = [-ww, yB, zw];  WRb = [ ww, yB, zw];
-    L2  = [-w2, yB, z2];  R2  = [ w2, yB, z2];
-    T   = [  0, yB, zT];
-
-    strut(WLb, L2);  strut(WRb, R2);   // waist up to widest point
-    strut(L2,  T);   strut(R2,  T);    // up to apex
-    strut([0, yB, zw], T);             // center vertical spine
-
-    // diagonal braces from the FRONT waist corners back up to the wide points
-    strut([-ww, yF, zw], L2);
-    strut([ ww, yF, zw], R2);
+// Center vertical spine on the back frame only, so the front stays open
+module back_spine() {
+    strut([0, yB, zw], [0, yB, zT]);
 }
 
 // ---- Assembly ----
 union() {
     base();
-    lower_cage();
-    upper_cage();
+    frame(yF);
+    frame(yB);
+    connectors();
+    cradle_ribs();
+    back_spine();
 }

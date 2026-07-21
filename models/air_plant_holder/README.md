@@ -1,6 +1,6 @@
 # Air Plant Holder — Double-Diamond Wireframe Cage
 
-A geometric display stand for the tall Tillandsia (the leftmost plant, caput-medusae type). Two stacked diamond frames accentuate the plant's height; the cage exists only at the back and around the lower bulb, so the front is completely open.
+A geometric display stand for the tall Tillandsia (the leftmost plant, caput-medusae type). Two stacked diamonds accentuate the plant's height, built as a full 3D wireframe cage — identical front and back frames joined by depth struts, with no solid faces, so the plant shows through the large front diamond opening.
 
 ![front](preview_front.png)
 
@@ -16,14 +16,15 @@ A geometric display stand for the tall Tillandsia (the leftmost plant, caput-med
 - Base plate: 64 × 42 × 4mm, flat for table placement, with an 8mm drainage hole under the bulb
 - Cage depth: 32mm (strut centers), sized to the bulb
 - Struts: 4.4mm diameter round
-- Lower diamond: 54mm wide, wireframe on front and back with cradle ribs that support the bulb
-- Upper diamond: 68mm wide, back plane only, with a center spine and two diagonal braces from the front waist corners
+- Lower diamond: 54mm wide, with cradle ribs that support the bulb
+- Upper diamond: 68mm wide, with a center vertical spine on the back frame only
+- Both diamonds are full 3D: front and back wireframes connected at every corner
 
 ## Design intent
 
 - **Geometric**: stacked diamond silhouette per the sketch
 - **Height-accentuating**: the tall upper diamond frames the plant's leaves and tops out just above them
-- **Open front**: above the bulb there are no front struts at all — the upper cage sits behind the plant
+- **Open front**: no solid faces anywhere; the front diamond opening (68 × 94mm) leaves the plant fully visible, and the center spine sits on the back frame
 - **Flat base**: sits flat on a table; the bulb wedges into the lower V and rests on two cradle ribs
 
 ## Printing
