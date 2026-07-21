@@ -59,10 +59,10 @@ crown ring is a large horizontal loop in mid-air and will need supports.
 ## Version 003 — triple diamond
 
 `air_plant_holder_003.scad` extends v001 to THREE stacked identical diamonds
-(60 × 62mm each, ~200mm overall). Same wireframe base pyramid, back apex per
+(60 × 50mm each, ~164mm overall). Same wireframe base pyramid, back apex per
 diamond, bottom front scoop, and two recessed waist bars. The plant occupies
 the lower two diamonds; the top diamond crowns the height. The ground ring is
-deepened to 46mm behind center to keep the taller lean over the footprint.
+tightened to 60 × 60mm to match the diamonds' proportions.
 
 ## Files
 

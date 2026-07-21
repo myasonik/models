@@ -6,9 +6,9 @@
 $fn = 32;
 
 // ---- Parameters ----
-bs_front = 30;   // ground ring front vertex (+y)
-bs_back  = 46;   // ground ring back vertex (-y), deeper for the taller lean
-bs_side  = 36;   // ground ring side vertices (±x)
+bs_front = 26;   // ground ring front vertex (+y)
+bs_back  = 34;   // ground ring back vertex (-y), slightly deeper for the lean
+bs_side  = 30;   // ground ring side vertices (±x) — matches diamond width
 ring_z   = 1.4;  // ring center height; shaved flat underneath
 base_h  = 14;    // height where the base risers meet the cage's bottom vertex
 
@@ -20,7 +20,7 @@ strut_r = 2.2;   // strut radius
 
 // Front-view silhouette — three identical diamonds stacked
 zB  = base_h;        // bottom vertex (14)
-sec = 62;            // height of each diamond section
+sec = 50;            // height of each diamond section
 zw1 = zB + sec;      // first waist (76)
 zw2 = zB + 2*sec;    // second waist (138)
 zT  = zB + 3*sec;    // top vertex (200)
@@ -54,7 +54,7 @@ A1 = [0, -pop, z1];   // back apexes, one per diamond
 A2 = [0, -pop, z2];
 A3 = [0, -pop, z3];
 
-F1 = [0, yF + fpop, 44];   // front scoop apex for the bulb
+F1 = [0, yF + fpop, 40];   // front scoop apex for the bulb
 
 // ---- Parts ----
 // Wireframe base cage: diamond-plan ground ring, risers to the bottom vertex
@@ -161,6 +161,6 @@ union() {
         back_pop();
         front_scoop();
         cradle_ribs();
-        %translate([0, 8, 22]) plant();
+        %translate([0, 8, 20]) plant();
     }
 }
