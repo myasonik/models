@@ -11,12 +11,13 @@
 $fn = 32;
 
 // ---- Parameters ----
-// Faceted base: diamond-plan footprint rising to a peak under the cage vertex
-bs_front = 30;   // footprint front vertex (+y)
-bs_back  = 38;   // footprint back vertex (-y)
-bs_side  = 36;   // footprint side vertices (±x)
-bs_peak  = 12;   // peak height under the cage's bottom vertex
-base_h  = 4;     // height where the cage's bottom vertex sits (buried in the peak)
+// Wireframe base cage: diamond-plan ground ring with risers converging on the
+// cage's bottom vertex — same hollow cage language as the rest
+bs_front = 30;   // ground ring front vertex (+y)
+bs_back  = 38;   // ground ring back vertex (-y)
+bs_side  = 36;   // ground ring side vertices (±x)
+ring_z   = 1.4;  // ring center height; struts are shaved flat underneath
+base_h  = 14;    // height where the base risers meet the cage's bottom vertex
 
 yF   = 16;       // front frame plane (y)
 pop  = 22;       // how far the back apexes pop out behind center
@@ -56,21 +57,25 @@ A1 = [0, -pop, z1];   // lower diamond
 A2 = [0, -pop, z2];   // upper diamond
 
 // Front scoop apex: pops out ahead of the lower diamond to catch the bulb
-F1 = [0, yF + fpop, 34];
+F1 = [0, yF + fpop, 44];
 
 // ---- Parts ----
-// Faceted crystal base: a shallow diamond-plan mound whose peak rises under
-// the cage's bottom vertex, continuing the cage aesthetic (no flat plate)
+// Wireframe base cage: a diamond-plan ground ring whose four corners send
+// risers up to the cage's bottom vertex — a hollow pyramid, no solid faces.
+// Struts are shaved flat underneath so it sits level on the table.
 module base() {
+    GF = [ 0,        bs_front, ring_z];
+    GB = [ 0,       -bs_back,  ring_z];
+    GL = [-bs_side, -4,        ring_z];
+    GR = [ bs_side, -4,        ring_z];
+    P  = [ 0, yF, base_h];   // meets the cage's bottom vertex
+
     difference() {
-        hull() {
-            linear_extrude(2)
-                polygon([[0, bs_front], [bs_side, -4], [0, -bs_back], [-bs_side, -4]]);
-            translate([0, yF, bs_peak - 3])
-                linear_extrude(3)
-                    polygon([[0, 8], [8, 0], [0, -8], [-8, 0]]);
+        union() {
+            strut(GF, GR); strut(GR, GB); strut(GB, GL); strut(GL, GF);
+            strut(GF, P);  strut(GR, P);  strut(GB, P);  strut(GL, P);
         }
-        translate([0, 6, -1]) cylinder(h = bs_peak + 4, d = 8);  // drainage under bulb
+        translate([-100, -100, -50]) cube([200, 200, 50]);  // flatten underside
     }
 }
 
@@ -130,7 +135,7 @@ module p_leaf(az, len, bend, r0) {
 }
 
 module p_tall_leaf() {
-    n = 14; len = 90;
+    n = 14; len = 85;
     translate([0, 0, 38])
         for (i = [0:n-1]) {
             t0 = i/n; t1 = (i+1)/n;
@@ -166,6 +171,6 @@ union() {
         // reference plant reclines with the cage; excluded from STL export.
         // Positioned where the bulb naturally wedges: V struts tangent to the
         // bulb sides, leaning forward into the front scoop
-        %translate([0, 8, 16]) plant();
+        %translate([0, 8, 24]) plant();
     }
 }

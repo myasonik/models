@@ -14,7 +14,7 @@ A geometric display stand for the tall Tillandsia (the leftmost plant, caput-med
 
 - Overall height: ~152mm; the two diamond sections are identical — 60mm wide × 74mm tall each
 - Cage incline: 8° backward, pivoting at the base contact so the plant sits reclined
-- Base: faceted crystal mound (no flat plate) — a diamond-plan footprint (72 × 68mm) whose top facets rise to a 12mm peak under the cage's bottom vertex, continuing the cage aesthetic; flat underside sits on the table; 8mm drainage hole under the bulb
+- Base: wireframe cage like everything else — a diamond-plan ground ring (72 × 68mm) whose four corners send risers up to the cage's bottom vertex, forming a hollow pyramid; the ring struts are shaved flat underneath so it sits level
 - Struts: 4.4mm diameter round
 - Cradle ribs run from the lower V back to its apex and support the bulb
 - Front scoop: the bottom section's corners converge on an apex 16mm in front of the front frame, catching the reclined bulb
@@ -49,8 +49,15 @@ tilt = 8;        // backward incline in degrees
 strut_r = 2.2;   // strut radius
 ```
 
+## Version 002 — symmetric variant
+
+`air_plant_holder_002.scad` mirrors the bottom half exactly onto the top: the
+upper diamond gets its own front scoop and cradle ribs, and a crown ring —
+the base pyramid mirrored — opens upward from the top vertex. Print note: the
+crown ring is a large horizontal loop in mid-air and will need supports.
+
 ## Files
 
-- `air_plant_holder_001.scad` — OpenSCAD source
-- `air_plant_holder_001.stl` — validated, print-ready mesh
-- `preview_front.png`, `preview_iso.png`, `preview_side.png` — renders
+- `air_plant_holder_001.scad` / `.stl` — main version (validated, print-ready)
+- `air_plant_holder_002.scad` / `.stl` — symmetric variant (validated)
+- `preview_*.png` — v001 renders; `preview2_*.png` — v002 renders
