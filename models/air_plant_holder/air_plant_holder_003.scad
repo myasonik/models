@@ -6,11 +6,14 @@
 $fn = 32;
 
 // ---- Parameters ----
-bs_front = 26;   // ground ring front vertex (+y)
-bs_back  = 34;   // ground ring back vertex (-y), slightly deeper for the lean
+// Ground ring 60 x 60mm centered near the peak; pyramid height 25mm matches
+// a diamond half (60 wide x 25 tall) so the base has the same proportions
+bs_front = 34;   // ground ring front vertex (+y)
+bs_back  = 26;   // ground ring back vertex (-y)
 bs_side  = 30;   // ground ring side vertices (±x) — matches diamond width
+bs_side_y = 4;   // y of the side vertices (ring center)
 ring_z   = 1.4;  // ring center height; shaved flat underneath
-base_h  = 14;    // height where the base risers meet the cage's bottom vertex
+base_h  = 26;    // height where the base risers meet the cage's bottom vertex
 
 yF   = 16;       // front frame plane (y)
 pop  = 22;       // how far the back apexes pop out behind center
@@ -20,7 +23,7 @@ strut_r = 2.2;   // strut radius
 
 // Front-view silhouette — three identical diamonds stacked
 zB  = base_h;        // bottom vertex (14)
-sec = 50;            // height of each diamond section
+sec = 46;            // height of each diamond section (keeps total ~164mm)
 zw1 = zB + sec;      // first waist (76)
 zw2 = zB + 2*sec;    // second waist (138)
 zT  = zB + 3*sec;    // top vertex (200)
@@ -54,15 +57,15 @@ A1 = [0, -pop, z1];   // back apexes, one per diamond
 A2 = [0, -pop, z2];
 A3 = [0, -pop, z3];
 
-F1 = [0, yF + fpop, 40];   // front scoop apex for the bulb
+F1 = [0, yF + fpop, 50];   // front scoop apex for the bulb
 
 // ---- Parts ----
 // Wireframe base cage: diamond-plan ground ring, risers to the bottom vertex
 module base() {
     GF = [ 0,        bs_front, ring_z];
     GB = [ 0,       -bs_back,  ring_z];
-    GL = [-bs_side, -4,        ring_z];
-    GR = [ bs_side, -4,        ring_z];
+    GL = [-bs_side, bs_side_y, ring_z];
+    GR = [ bs_side, bs_side_y, ring_z];
     P  = [ 0, yF, base_h];
 
     difference() {
@@ -169,6 +172,6 @@ union() {
         back_pop();
         front_scoop();
         cradle_ribs();
-        %translate([0, 8, 20]) plant();
+        %translate([0, 8, 30]) plant();
     }
 }
