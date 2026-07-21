@@ -23,11 +23,14 @@ tilt = 8;        // degrees the cage rocks backward
 strut_r = 2.2;   // strut radius
 
 // Front-view silhouette (x = half-width at height z)
+// Both sections are the same height: waist sits midway between base and top
 zB = base_h;         // bottom vertex of lower diamond
-w1 = 27; z1 = 32;    // lower diamond widest point
-ww = 7;  zw = 58;    // waist between the diamonds
-w2 = 34; z2 = 108;   // upper diamond widest point
 zT = 152;            // top vertex
+zw = (zB + zT) / 2;  // waist between the diamonds (78)
+w1 = 27; z1 = (zB + zw) / 2;   // lower diamond widest point (41)
+ww = 7;              // waist half-width
+w2 = 34; z2 = (zw + zT) / 2;   // upper diamond widest point (115)
+yW = -6;             // waist bar pulled back so it doesn't push the plant out
 
 // ---- Helpers ----
 module strut(p1, p2) {
@@ -42,7 +45,7 @@ function lerp(a, b, t) = a + (b - a) * t;
 // ---- Front frame vertices ----
 B  = [  0, yF, zB];
 L1 = [-w1, yF, z1];  R1 = [ w1, yF, z1];
-WL = [-ww, yF, zw];  WR = [ ww, yF, zw];
+WL = [-ww, yW, zw];  WR = [ ww, yW, zw];   // recessed waist
 L2 = [-w2, yF, z2];  R2 = [ w2, yF, z2];
 T  = [  0, yF, zT];
 
@@ -51,7 +54,7 @@ A1 = [0, -pop, z1];   // lower diamond
 A2 = [0, -pop, z2];   // upper diamond
 
 // Front scoop apex: pops out ahead of the lower diamond to catch the bulb
-F1 = [0, yF + fpop, 30];
+F1 = [0, yF + fpop, 34];
 
 // ---- Parts ----
 module base() {
@@ -103,6 +106,51 @@ module gusset() {
     translate([B[0], B[1], 0]) cylinder(h = 14, d1 = 22, d2 = 5);
 }
 
+// ---- Reference plant (preview only — % excludes it from render/STL) ----
+// Rough model of the caput-medusae from the photo: teardrop bulb ~40mm wide,
+// recurving leaves, one tall wavy central leaf, ~135mm overall
+
+function arcp(R, bend, t) = [R*(1 - cos(bend*t)), 0, R*sin(bend*t)];
+function wavep(len, t) = [10*sin(540*t), 0, len*t];
+
+module p_leaf(az, len, bend, r0) {
+    n = 10;
+    R = len / (bend * PI / 180);
+    rotate([0, 0, az]) translate([0, 0, 38])
+        for (i = [0:n-1]) {
+            t0 = i/n; t1 = (i+1)/n;
+            hull() {
+                translate(arcp(R, bend, t0)) sphere(r0*(1 - 0.85*t0));
+                translate(arcp(R, bend, t1)) sphere(r0*(1 - 0.85*t1));
+            }
+        }
+}
+
+module p_tall_leaf() {
+    n = 14; len = 90;
+    translate([0, 0, 38])
+        for (i = [0:n-1]) {
+            t0 = i/n; t1 = (i+1)/n;
+            hull() {
+                translate(wavep(len, t0)) sphere(4*(1 - 0.8*t0));
+                translate(wavep(len, t1)) sphere(4*(1 - 0.8*t1));
+            }
+        }
+}
+
+module plant() {
+    // teardrop bulb
+    hull() { translate([0,0,6])  sphere(8);  translate([0,0,22]) sphere(19); }
+    hull() { translate([0,0,22]) sphere(19); translate([0,0,40]) sphere(8);  }
+    // recurving leaves, biased toward the open front (+y is front, az 90)
+    p_leaf( 90, 85, 70, 4.5);
+    p_leaf( 30, 78, 75, 4);
+    p_leaf(150, 72, 80, 4);
+    p_leaf(-30, 68, 60, 4);
+    p_leaf(215, 55, 45, 4);   // one short leaf resting back against the cage
+    p_tall_leaf();
+}
+
 // ---- Assembly ----
 union() {
     base();
@@ -113,5 +161,9 @@ union() {
         back_pop();
         front_scoop();
         cradle_ribs();
+        // reference plant reclines with the cage; excluded from STL export.
+        // Positioned where the bulb naturally wedges: V struts tangent to the
+        // bulb sides, leaning forward into the front scoop
+        %translate([0, 8, 16]) plant();
     }
 }
