@@ -67,9 +67,21 @@ the same shape as a diamond half. Vertical beams run along the front edges
 through the diamonds' collinear side tips (x = ±30), tying the three diamonds
 together and stiffening the front frame.
 
+## Version 004 — hanging wall pendant
+
+`air_plant_holder_004.scad` is a wall-hung take on a geometric hanging pendant:
+a teardrop wireframe (~52mm wide, ~148mm tall plus hanging tab) whose back
+plane is shaved flat to lie flush against the wall. The front pops 36mm off
+the wall to a vertex at the widest ring, forming a basket that cradles the
+bulb (interior ~48mm wide × ~31mm deep); cradle ribs bridge the lower cone.
+Hangs from a nail through the 5mm hole in the top tab. Print it lying on its
+flat back; light support under the front vertex may help.
+
 ## Files
 
 - `air_plant_holder_001.scad` / `.stl` — two-diamond version (validated)
 - `air_plant_holder_002.scad` / `.stl` — symmetric variant of v001 (validated)
 - `air_plant_holder_003.scad` / `.stl` — triple-diamond version (validated)
-- `preview_*.png` — v001; `preview2_*.png` — v002; `preview3_*.png` — v003
+- `air_plant_holder_004.scad` / `.stl` — hanging wall pendant (validated)
+- `preview_*.png` — v001; `preview2_*.png` — v002; `preview3_*.png` — v003;
+  `preview4_*.png` — v004
