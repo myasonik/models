@@ -57,16 +57,21 @@ module cradle_ribs() {
               [0, lerp(0, fpop, 0.4), lerp(0, zW, 0.4)]);
 }
 
-// Hanging eyelet nested INSIDE the upper cone, just below the tip — a small
-// teardrop washer flush with the wall, bridging the converging edges. The
+// Hanging hook nested INSIDE the upper cone, just below the tip — a teardrop
+// washer flush with the wall whose slot opens downward: lower it onto a nail
+// and lift it off. The round seat at the top of the slot bears the load. The
 // front strut (T-F) is ~7mm off the wall here, leaving nail-head clearance.
-module hang_eye() {
+module hang_hook() {
     difference() {
         hull() {
             translate([0, shave, hole_z])      rotate([-90, 0, 0]) cylinder(h = 4, r = 7);
             translate([0, shave, hole_z + 12]) rotate([-90, 0, 0]) cylinder(h = 4, r = 2.5);
         }
-        translate([0, -10, hole_z]) rotate([-90, 0, 0]) cylinder(h = 20, d = hole_d);
+        // nail seat flaring open downward, out the bottom of the washer
+        hull() {
+            translate([0, -10, hole_z])      rotate([-90, 0, 0]) cylinder(h = 20, d = hole_d + 0.5);
+            translate([0, -10, hole_z - 14]) rotate([-90, 0, 0]) cylinder(h = 20, d = 9);
+        }
     }
 }
 
@@ -117,7 +122,7 @@ difference() {
         back_frame();
         front_pop();
         cradle_ribs();
-        hang_eye();
+        hang_hook();
         // bulb nests in the basket, back against the wall, leaves spilling out
         %translate([0, 18, 16]) plant();
     }

@@ -74,10 +74,12 @@ a teardrop wireframe (~52mm wide, ~148mm tall plus hanging tab) whose back
 plane is shaved flat to lie flush against the wall. The front pops 36mm off
 the wall to a vertex at the widest ring, forming a basket that cradles the
 bulb (interior ~48mm wide × ~31mm deep); cradle ribs bridge the lower cone.
-The hanging eyelet is nested inside the upper cone just below the tip — a
-small teardrop washer flush with the wall, with a 5mm nail hole; the front
-strut is ~7mm off the wall there, leaving nail-head clearance. Print it lying
-on its flat back; light support under the front vertex may help.
+The hanger is nested inside the upper cone just below the tip — a small
+teardrop washer flush with the wall whose slot opens downward like a hook:
+lower the pendant onto a nail and lift it off freely. The round seat at the
+top of the slot bears the load, and the front strut is ~7mm off the wall
+there, leaving nail-head clearance. Print it lying on its flat back; light
+support under the front vertex may help.
 
 ## Files
 
