@@ -1,6 +1,6 @@
 # Air Plant Holder — Double-Diamond Wireframe Cage
 
-A geometric display stand for the tall Tillandsia (the leftmost plant, caput-medusae type). Two stacked diamonds accentuate the plant's height. The front face is a flat double-diamond wireframe; the back pops out — each diamond tapers to an apex vertex behind its widest point, so the side profile is a crystal-like zigzag rather than a flat plane. No solid faces anywhere.
+A geometric display stand for the tall Tillandsia (the leftmost plant, caput-medusae type). Two stacked diamonds accentuate the plant's height. The front face is a flat double-diamond wireframe; the back pops out — each diamond tapers to an apex vertex behind its widest point, so the side profile is a crystal-like zigzag rather than a flat plane. The whole cage rocks back 8° so the plant reclines, and a scoop cage pops out the front of the bottom section to catch the base of the plant. No solid faces anywhere.
 
 ![front](preview_front.png)
 
@@ -12,11 +12,12 @@ A geometric display stand for the tall Tillandsia (the leftmost plant, caput-med
 
 ## Model dimensions
 
-- Overall height: 152mm
-- Base plate: 64 × 52 × 4mm, flat for table placement, with an 8mm drainage hole under the bulb
-- Cage depth: ~38mm from front frame to back apexes
+- Overall height: ~152mm
+- Cage incline: 8° backward, pivoting at the base contact so the plant sits reclined
+- Base plate: 64 × 58 × 4mm, flat for table placement, with an 8mm drainage hole under the bulb
 - Struts: 4.4mm diameter round
 - Lower diamond: 54mm wide, with cradle ribs running back to its apex that support the bulb
+- Front scoop: the bottom section's corners converge on an apex 16mm in front of the front frame, catching the reclined bulb
 - Upper diamond: 68mm wide
 - Each diamond's four corners converge on a back apex vertex 22mm behind center — the popped-out crystal profile
 - Conical gusset reinforces the single bottom-vertex contact with the base
@@ -43,6 +44,8 @@ Key parameters at the top of `air_plant_holder_001.scad`:
 zT = 152;        // overall height
 w2 = 34;         // upper diamond half-width
 pop = 22;        // how far the back apexes pop out
+fpop = 16;       // how far the front scoop pops out
+tilt = 8;        // backward incline in degrees
 strut_r = 2.2;   // strut radius
 ```
 

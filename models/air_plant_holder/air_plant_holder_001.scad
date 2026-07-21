@@ -4,18 +4,22 @@
 // Two stacked diamonds accentuate the plant's height. The front face is a flat
 // double-diamond wireframe (fully open); the back POPS OUT — each diamond
 // tapers to an apex vertex behind its widest point, so the side profile is a
-// crystal-like zigzag instead of a flat plane. Flat base for table placement.
+// crystal-like zigzag instead of a flat plane. The whole cage rocks back a few
+// degrees so the plant sits on an incline, and a small cage scoop pops out the
+// front of the bottom section to catch the base of the plant. Flat base plate.
 
 $fn = 32;
 
 // ---- Parameters ----
 base_w  = 64;    // base plate width (x)
-base_d  = 52;    // base plate depth (y)
-base_ctr = -3;   // base plate y center (footprint spans front frame to back apexes)
+base_d  = 58;    // base plate depth (y)
+base_ctr = -4;   // base plate y center (footprint spans front scoop to back apexes)
 base_h  = 4;     // base plate thickness
 
 yF   = 16;       // front frame plane (y)
 pop  = 22;       // how far the back apexes pop out behind center
+fpop = 16;       // how far the front scoop pops out past the front frame
+tilt = 8;        // degrees the cage rocks backward
 strut_r = 2.2;   // strut radius
 
 // Front-view silhouette (x = half-width at height z)
@@ -45,6 +49,9 @@ T  = [  0, yF, zT];
 // Back apexes: one behind each diamond's widest height
 A1 = [0, -pop, z1];   // lower diamond
 A2 = [0, -pop, z2];   // upper diamond
+
+// Front scoop apex: pops out ahead of the lower diamond to catch the bulb
+F1 = [0, yF + fpop, 30];
 
 // ---- Parts ----
 module base() {
@@ -77,6 +84,13 @@ module back_pop() {
     strut(T,  A2);
 }
 
+// Front scoop: the bottom section's corners converge on a forward apex,
+// forming a protruding cage that catches the base of the plant
+module front_scoop() {
+    strut(B,  F1);
+    strut(L1, F1);  strut(R1, F1);
+}
+
 // Two ribs from the front V edges back to the lower apex; the bulb rests here
 module cradle_ribs() {
     for (s = [-1, 1])
@@ -92,8 +106,12 @@ module gusset() {
 // ---- Assembly ----
 union() {
     base();
-    gusset();
-    front_frame();
-    back_pop();
-    cradle_ribs();
+    // rock the whole cage backward about its base contact point
+    translate([0, yF, base_h]) rotate([tilt, 0, 0]) translate([0, -yF, -base_h]) {
+        gusset();
+        front_frame();
+        back_pop();
+        front_scoop();
+        cradle_ribs();
+    }
 }
