@@ -62,7 +62,9 @@ crown ring is a large horizontal loop in mid-air and will need supports.
 (60 × 50mm each, ~164mm overall). Same wireframe base pyramid, back apex per
 diamond, bottom front scoop, and two recessed waist bars. The plant occupies
 the lower two diamonds; the top diamond crowns the height. The ground ring is
-tightened to 60 × 60mm to match the diamonds' proportions.
+tightened to 60 × 60mm to match the diamonds' proportions. Vertical beams run
+along the front edges through the diamonds' collinear side tips (x = ±30),
+tying the three diamonds together and stiffening the front frame.
 
 ## Files
 

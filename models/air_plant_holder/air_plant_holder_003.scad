@@ -101,6 +101,13 @@ module back_pop() {
     strut(T,   A3);
 }
 
+// Vertical beams along the front edges tying the three diamonds together —
+// they run through the collinear side vertices (L1-L2-L3 / R1-R2-R3)
+module front_beams() {
+    strut(L1, L3);
+    strut(R1, R3);
+}
+
 // Bottom section's corners converge on a forward apex, catching the bulb
 module front_scoop() {
     strut(B,  F1);
@@ -158,6 +165,7 @@ union() {
     base();
     translate([0, yF, base_h]) rotate([tilt, 0, 0]) translate([0, -yF, -base_h]) {
         front_frame();
+        front_beams();
         back_pop();
         front_scoop();
         cradle_ribs();
