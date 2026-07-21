@@ -12,16 +12,14 @@ A geometric display stand for the tall Tillandsia (the leftmost plant, caput-med
 
 ## Model dimensions
 
-- Overall height: ~152mm; both sections are equal height (74mm each, waist at the midpoint)
+- Overall height: ~152mm; the two diamond sections are identical — 60mm wide × 74mm tall each
 - Cage incline: 8° backward, pivoting at the base contact so the plant sits reclined
-- Base plate: 64 × 58 × 4mm, flat for table placement, with an 8mm drainage hole under the bulb
+- Base: faceted crystal mound (no flat plate) — a diamond-plan footprint (72 × 68mm) whose top facets rise to a 12mm peak under the cage's bottom vertex, continuing the cage aesthetic; flat underside sits on the table; 8mm drainage hole under the bulb
 - Struts: 4.4mm diameter round
-- Lower diamond: 54mm wide, with cradle ribs running back to its apex that support the bulb
+- Cradle ribs run from the lower V back to its apex and support the bulb
 - Front scoop: the bottom section's corners converge on an apex 16mm in front of the front frame, catching the reclined bulb
-- Upper diamond: 68mm wide
 - Waist bar recessed 22mm behind the front frame so it doesn't push the plant out
 - Each diamond's four corners converge on a back apex vertex 22mm behind center — the popped-out crystal profile
-- Conical gusset reinforces the single bottom-vertex contact with the base
 - A reference plant model (bulb + leaves, `%` modifier) shows in previews to check fit but is excluded from the STL
 
 ## Design intent

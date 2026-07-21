@@ -11,10 +11,12 @@
 $fn = 32;
 
 // ---- Parameters ----
-base_w  = 64;    // base plate width (x)
-base_d  = 58;    // base plate depth (y)
-base_ctr = -4;   // base plate y center (footprint spans front scoop to back apexes)
-base_h  = 4;     // base plate thickness
+// Faceted base: diamond-plan footprint rising to a peak under the cage vertex
+bs_front = 30;   // footprint front vertex (+y)
+bs_back  = 38;   // footprint back vertex (-y)
+bs_side  = 36;   // footprint side vertices (±x)
+bs_peak  = 12;   // peak height under the cage's bottom vertex
+base_h  = 4;     // height where the cage's bottom vertex sits (buried in the peak)
 
 yF   = 16;       // front frame plane (y)
 pop  = 22;       // how far the back apexes pop out behind center
@@ -27,9 +29,9 @@ strut_r = 2.2;   // strut radius
 zB = base_h;         // bottom vertex of lower diamond
 zT = 152;            // top vertex
 zw = (zB + zT) / 2;  // waist between the diamonds (78)
-w1 = 27; z1 = (zB + zw) / 2;   // lower diamond widest point (41)
+w1 = 30; z1 = (zB + zw) / 2;   // lower diamond widest point (41)
 ww = 7;              // waist half-width
-w2 = 34; z2 = (zw + zT) / 2;   // upper diamond widest point (115)
+w2 = 30; z2 = (zw + zT) / 2;   // upper diamond widest point (115) — same width as lower
 yW = -6;             // waist bar pulled back so it doesn't push the plant out
 
 // ---- Helpers ----
@@ -57,11 +59,18 @@ A2 = [0, -pop, z2];   // upper diamond
 F1 = [0, yF + fpop, 34];
 
 // ---- Parts ----
+// Faceted crystal base: a shallow diamond-plan mound whose peak rises under
+// the cage's bottom vertex, continuing the cage aesthetic (no flat plate)
 module base() {
     difference() {
-        translate([-base_w/2, base_ctr - base_d/2, 0])
-            cube([base_w, base_d, base_h]);
-        translate([0, base_ctr, -1]) cylinder(h = base_h + 2, d = 8);  // drainage
+        hull() {
+            linear_extrude(2)
+                polygon([[0, bs_front], [bs_side, -4], [0, -bs_back], [-bs_side, -4]]);
+            translate([0, yF, bs_peak - 3])
+                linear_extrude(3)
+                    polygon([[0, 8], [8, 0], [0, -8], [-8, 0]]);
+        }
+        translate([0, 6, -1]) cylinder(h = bs_peak + 4, d = 8);  // drainage under bulb
     }
 }
 
@@ -98,12 +107,6 @@ module front_scoop() {
 module cradle_ribs() {
     for (s = [-1, 1])
         strut([lerp(0, s*w1, 0.45), yF, lerp(zB, z1, 0.45)], A1);
-}
-
-// Conical gusset where the cage meets the base — the bottom vertex is the
-// only base contact, so reinforce that joint
-module gusset() {
-    translate([B[0], B[1], 0]) cylinder(h = 14, d1 = 22, d2 = 5);
 }
 
 // ---- Reference plant (preview only — % excludes it from render/STL) ----
@@ -156,7 +159,6 @@ union() {
     base();
     // rock the whole cage backward about its base contact point
     translate([0, yF, base_h]) rotate([tilt, 0, 0]) translate([0, -yF, -base_h]) {
-        gusset();
         front_frame();
         back_pop();
         front_scoop();
