@@ -15,7 +15,7 @@ zW   = 45;       // height of the widest ring (bulb sits just below)
 zT   = 148;      // top tip of the teardrop
 fpop = 36;       // how far the front vertex pops off the wall
 
-hole_z = 156;    // nail hole center
+hole_z = 122;    // nail hole center — inside the upper cone, below the tip
 hole_d = 5;      // nail hole diameter
 
 // ---- Helpers ----
@@ -57,12 +57,14 @@ module cradle_ribs() {
               [0, lerp(0, fpop, 0.4), lerp(0, zW, 0.4)]);
 }
 
-// Hanging tab: flat teardrop lobe above the top tip with a nail hole
-module hang_tab() {
+// Hanging eyelet nested INSIDE the upper cone, just below the tip — a small
+// teardrop washer flush with the wall, bridging the converging edges. The
+// front strut (T-F) is ~7mm off the wall here, leaving nail-head clearance.
+module hang_eye() {
     difference() {
         hull() {
-            translate([0, shave, hole_z]) rotate([-90, 0, 0]) cylinder(h = 4, r = 8);
-            translate(T) sphere(strut_r);
+            translate([0, shave, hole_z])      rotate([-90, 0, 0]) cylinder(h = 4, r = 7);
+            translate([0, shave, hole_z + 12]) rotate([-90, 0, 0]) cylinder(h = 4, r = 2.5);
         }
         translate([0, -10, hole_z]) rotate([-90, 0, 0]) cylinder(h = 20, d = hole_d);
     }
@@ -115,7 +117,7 @@ difference() {
         back_frame();
         front_pop();
         cradle_ribs();
-        hang_tab();
+        hang_eye();
         // bulb nests in the basket, back against the wall, leaves spilling out
         %translate([0, 18, 16]) plant();
     }
