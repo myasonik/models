@@ -56,8 +56,17 @@ upper diamond gets its own front scoop and cradle ribs, and a crown ring —
 the base pyramid mirrored — opens upward from the top vertex. Print note: the
 crown ring is a large horizontal loop in mid-air and will need supports.
 
+## Version 003 — triple diamond
+
+`air_plant_holder_003.scad` extends v001 to THREE stacked identical diamonds
+(60 × 62mm each, ~200mm overall). Same wireframe base pyramid, back apex per
+diamond, bottom front scoop, and two recessed waist bars. The plant occupies
+the lower two diamonds; the top diamond crowns the height. The ground ring is
+deepened to 46mm behind center to keep the taller lean over the footprint.
+
 ## Files
 
-- `air_plant_holder_001.scad` / `.stl` — main version (validated, print-ready)
-- `air_plant_holder_002.scad` / `.stl` — symmetric variant (validated)
-- `preview_*.png` — v001 renders; `preview2_*.png` — v002 renders
+- `air_plant_holder_001.scad` / `.stl` — two-diamond version (validated)
+- `air_plant_holder_002.scad` / `.stl` — symmetric variant of v001 (validated)
+- `air_plant_holder_003.scad` / `.stl` — triple-diamond version (validated)
+- `preview_*.png` — v001; `preview2_*.png` — v002; `preview3_*.png` — v003
