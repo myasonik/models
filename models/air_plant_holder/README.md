@@ -1,6 +1,6 @@
 # Air Plant Holder — Double-Diamond Wireframe Cage
 
-A geometric display stand for the tall Tillandsia (the leftmost plant, caput-medusae type). Two stacked diamonds accentuate the plant's height, built as a full 3D wireframe cage — identical front and back frames joined by depth struts, with no solid faces, so the plant shows through the large front diamond opening.
+A geometric display stand for the tall Tillandsia (the leftmost plant, caput-medusae type). Two stacked diamonds accentuate the plant's height. The front face is a flat double-diamond wireframe; the back pops out — each diamond tapers to an apex vertex behind its widest point, so the side profile is a crystal-like zigzag rather than a flat plane. No solid faces anywhere.
 
 ![front](preview_front.png)
 
@@ -13,24 +13,25 @@ A geometric display stand for the tall Tillandsia (the leftmost plant, caput-med
 ## Model dimensions
 
 - Overall height: 152mm
-- Base plate: 64 × 42 × 4mm, flat for table placement, with an 8mm drainage hole under the bulb
-- Cage depth: 32mm (strut centers), sized to the bulb
+- Base plate: 64 × 52 × 4mm, flat for table placement, with an 8mm drainage hole under the bulb
+- Cage depth: ~38mm from front frame to back apexes
 - Struts: 4.4mm diameter round
-- Lower diamond: 54mm wide, with cradle ribs that support the bulb
-- Upper diamond: 68mm wide, with a center vertical spine on the back frame only
-- Both diamonds are full 3D: front and back wireframes connected at every corner
+- Lower diamond: 54mm wide, with cradle ribs running back to its apex that support the bulb
+- Upper diamond: 68mm wide
+- Each diamond's four corners converge on a back apex vertex 22mm behind center — the popped-out crystal profile
+- Conical gusset reinforces the single bottom-vertex contact with the base
 
 ## Design intent
 
 - **Geometric**: stacked diamond silhouette per the sketch
 - **Height-accentuating**: the tall upper diamond frames the plant's leaves and tops out just above them
-- **Open front**: no solid faces anywhere; the front diamond opening (68 × 94mm) leaves the plant fully visible, and the center spine sits on the back frame
+- **Open front**: no solid faces anywhere; the flat front frame leaves the plant fully visible while the cage volume pops backward behind it
 - **Flat base**: sits flat on a table; the bulb wedges into the lower V and rests on two cradle ribs
 
 ## Printing
 
 - Print upright as modeled, PLA or PETG
-- 0.2mm layers; the horizontal front-to-back connectors bridge ~32mm, which most printers handle without support (enable supports if your bridging is poor)
+- 0.2mm layers; the two horizontal corner-to-apex struts on each diamond bridge ~45mm — most printers handle this, but enable supports if your bridging is poor
 - No infill to speak of — the part is struts and a thin plate
 - ~30g of filament
 
@@ -41,7 +42,7 @@ Key parameters at the top of `air_plant_holder_001.scad`:
 ```openscad
 zT = 152;        // overall height
 w2 = 34;         // upper diamond half-width
-depth = 32;      // cage depth (match bulb depth)
+pop = 22;        // how far the back apexes pop out
 strut_r = 2.2;   // strut radius
 ```
 
