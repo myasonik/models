@@ -9,7 +9,7 @@ the source wins: signatures live in `src/core/bin.scad`, `src/core/cutouts.scad`
 and `gridfinity-rebuilt-baseplate.scad`.
 
 > **OpenSCAD version note.** The render scripts prefer an OpenSCAD nightly
-> build wherever one is installed (see `SETUP-LINUX.md` / `SETUP-WINDOWS.md`
+> build wherever one is installed (see the `openscad-setup` skill
 > at the project root) — with it the full API below works as written, and
 > full renders take seconds (Manifold engine). Stable
 > 2021.01 cannot run anything built on the

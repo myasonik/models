@@ -51,7 +51,7 @@ find_openscad() {
         "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
         "$HOME/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
         # Linux: distro packages are often 2021.01 -- fine for plain models,
-        # too old for the gridfinity library (see SETUP-LINUX.md)
+        # too old for the gridfinity library (see the openscad-setup skill)
         "/usr/bin/openscad"
         "/usr/local/bin/openscad"
     )
@@ -164,7 +164,7 @@ fi
 # derived from INPUT; this catches an explicit --output aimed at the root.
 if [[ "$(dirname "$OUTPUT")" == "." ]]; then
     echo "Error: refusing to write '$OUTPUT' to the project root." >&2
-    echo "Renders live alongside the model, e.g. models/<name>/<name>_001.png" >&2
+    echo "Renders live alongside the model, e.g. <name>/<name>_001.png" >&2
     exit 1
 fi
 

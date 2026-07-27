@@ -23,7 +23,7 @@ Beside the `.scad` they came from, inside the model's folder. With no
 on its own. The script refuses to write to the project root.
 
 ```
-models/phone_stand/phone_stand_001.scad  ->  models/phone_stand/phone_stand_001_preview.png
+phone_stand/phone_stand_001.scad  ->  phone_stand/phone_stand_001_preview.png
 ```
 
 ## Workflow
@@ -66,10 +66,10 @@ three rotation values meaningfully affect the output.
 ## Example
 
 ```bash
-.claude/skills/preview-scad/scripts/render-scad.sh models/phone_stand/phone_stand_001.scad
+.claude/skills/preview-scad/scripts/render-scad.sh phone_stand/phone_stand_001.scad
 ```
 
-Then read `models/phone_stand/phone_stand_001_preview.png` to see the result.
+Then read `phone_stand/phone_stand_001_preview.png` to see the result.
 
 Rendering two views — a front elevation and a three-quarter — catches problems
 that a single angle hides.

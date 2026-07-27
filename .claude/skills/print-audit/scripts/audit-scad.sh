@@ -41,7 +41,7 @@ find_openscad() {
         "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
         "$HOME/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
         # Linux: distro packages are often 2021.01 -- fine for plain models,
-        # too old for the gridfinity library (see SETUP-LINUX.md)
+        # too old for the gridfinity library (see the openscad-setup skill)
         "/usr/bin/openscad" "/usr/local/bin/openscad"
     )
     for c in "${stable[@]}"; do

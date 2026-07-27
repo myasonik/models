@@ -35,7 +35,7 @@ Beside the `.scad` they came from, inside the model's folder. With no
 own. The script refuses to write to the project root.
 
 ```
-models/phone_stand/phone_stand_003.scad  ->  models/phone_stand/phone_stand_003.stl
+phone_stand/phone_stand_003.scad  ->  phone_stand/phone_stand_003.stl
 ```
 
 ## Geometry Validation
@@ -54,10 +54,10 @@ Treat `UNKNOWN` as "not validated" — it is not a pass.
 
 ## Example
 
-After `models/phone_stand/phone_stand_003.scad` looks good in preview:
+After `phone_stand/phone_stand_003.scad` looks good in preview:
 
 ```bash
-.claude/skills/export-stl/scripts/export-stl.sh models/phone_stand/phone_stand_003.scad
+.claude/skills/export-stl/scripts/export-stl.sh phone_stand/phone_stand_003.scad
 ```
 
 Output:

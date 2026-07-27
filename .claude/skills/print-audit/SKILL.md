@@ -22,7 +22,7 @@ and emit one combined report.
 ## A. Mechanical checks (run the script)
 
 ```bash
-.claude/skills/print-audit/scripts/audit-scad.sh models/<name>/<name>_<ver>.scad
+.claude/skills/print-audit/scripts/audit-scad.sh <name>/<name>_<ver>.scad
 ```
 
 Pass `--line-width <mm>` if the printer's extrusion width is not 0.4mm.

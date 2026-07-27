@@ -2,7 +2,7 @@
 
 # OpenSCAD Version Helper
 # Finds the next available version number for a model name.
-# Models live one-folder-per-model under $MODELS_DIR (default: models/).
+# Models live one-folder-per-model under $MODELS_DIR (default: the repo root).
 # Cross-platform: macOS, Linux, Windows (Git Bash / MSYS2)
 
 set -uo pipefail
@@ -14,17 +14,17 @@ Usage: version-scad.sh <model-name>
 Finds existing versions and returns the next version number. Creates the
 model's folder if it does not already exist.
 
-Models are stored one folder per model, never at the project root:
+Each model gets its own folder; .scad files never sit loose at the top level:
 
-  models/<name>/<name>_001.scad
-  models/<name>/<name>_002.scad
+  <name>/<name>_001.scad
+  <name>/<name>_002.scad
 
 Environment:
-  MODELS_DIR   Root directory holding model folders (default: models)
+  MODELS_DIR   Directory holding model folders (default: the repo root)
 
 Example:
   version-scad.sh piano
-  # If models/piano/piano_001.scad exists, outputs: models/piano/piano_002.scad
+  # If piano/piano_001.scad exists, outputs: piano/piano_002.scad
 EOF
     exit 1
 fi
@@ -38,8 +38,14 @@ if [[ "$MODEL_NAME" == *[/\\]* || "$MODEL_NAME" == .* ]]; then
     exit 1
 fi
 
-MODELS_DIR="${MODELS_DIR:-models}"
-MODEL_DIR="${MODELS_DIR}/${MODEL_NAME}"
+MODELS_DIR="${MODELS_DIR:-.}"
+
+# With models at the repo root, "./piano/..." is just noise -- emit "piano/...".
+if [[ "$MODELS_DIR" == "." ]]; then
+    MODEL_DIR="${MODEL_NAME}"
+else
+    MODEL_DIR="${MODELS_DIR}/${MODEL_NAME}"
+fi
 
 if ! mkdir -p "$MODEL_DIR"; then
     echo "Error: could not create $MODEL_DIR" >&2

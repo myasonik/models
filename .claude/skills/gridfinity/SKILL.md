@@ -69,19 +69,19 @@ Sanity-check numbers (the library enforces these — never redefine them):
 ## Using the library
 
 The library lives at `.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/`.
-Model files under `models/<name>/` reach it with `../../`.
+Model folders sit at the repo root, so a model file reaches it with `../`.
 
 **Bin model — start every bin file with this exact block:**
 
 ```scad
-include <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/standard.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/gridfinity-rebuilt-utility.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/gridfinity-rebuilt-holes.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/bin.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/cutouts.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/helpers/generic-helpers.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/helpers/grid.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/helpers/grid_element.scad>
+include <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/standard.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/gridfinity-rebuilt-utility.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/gridfinity-rebuilt-holes.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/bin.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/cutouts.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/helpers/generic-helpers.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/helpers/grid.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/helpers/grid_element.scad>
 
 $fa = 4;
 $fs = 0.25;
@@ -90,8 +90,8 @@ $fs = 0.25;
 **Baseplate model:**
 
 ```scad
-include <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/standard.scad>
-use <../../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/gridfinity-rebuilt-baseplate.scad>
+include <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/src/core/standard.scad>
+use <../.claude/skills/gridfinity/lib/gridfinity-rebuilt-openscad/gridfinity-rebuilt-baseplate.scad>
 
 $fa = 8;
 $fs = 0.25;
@@ -108,8 +108,7 @@ Three traps to avoid:
   and the comments in `src/core/*.scad`, not `docs/`.
 - **The `cgs()` family needs a nightly OpenSCAD build.** The
   render/export/audit scripts prefer a nightly wherever one is installed
-  (the platform setup doc at the project root — `SETUP-LINUX.md` /
-  `SETUP-WINDOWS.md` — covers installing one), and with it the full library
+  (the `openscad-setup` skill covers installing one), and with it the full library
   API works. But if a render ever fails with "No grid element available" —
   or suddenly takes minutes instead of seconds — a script has fallen back
   to stable OpenSCAD 2021.01, which doesn't propagate special variables
@@ -182,7 +181,10 @@ excellent working references.
 1. Clarify the ask (Step 0), then get a versioned path:
    `.claude/skills/openscad/scripts/version-scad.sh <name>`
 2. Write the model. Keep user-tweakable parameters (grid size, height,
-   divisions) as named variables at the top of the file.
+   divisions) as named variables at the top of the file. First version: also
+   create the model's `SPEC.md` and `HISTORY.md` per the openscad skill —
+   Step 0's answers (footprint, height, base, interior, niceties) are the
+   spec's Requirements section.
 3. Render and **read the echo output**: every bin prints its bounding box and
    a height breakdown. Confirm the numbers match the ask (drawer clearance,
    internal height) instead of eyeballing.
@@ -192,7 +194,8 @@ excellent working references.
      this is where a broken base is visible and it's the side you can't unsee
      after printing
    - front (`--camera 0,0,0,90,0,0,0`) — height, lip, tab geometry
-5. Iterate as new versions (`_002`, `_003`, …) per the openscad skill.
+5. Iterate as new versions (`_002`, `_003`, …) per the openscad skill,
+   including its per-version `SPEC.md` update and `HISTORY.md` entry.
 6. Finish with `/print-audit`, then `/export-stl`.
 
 ## Printing notes
