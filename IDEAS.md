@@ -8,3 +8,5 @@ fine; the design conversation fills in the rest.
 
 - **Sarah's comb**
 - **Toothpaste cap opener for Sarah**
+- **Desk power bar magnet holder**
+- **Coax cover**
