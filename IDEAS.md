@@ -7,3 +7,4 @@ Add whatever detail exists at the time. An entry with nothing but a name is
 fine; the design conversation fills in the rest.
 
 - **Sarah's comb**
+- **Toothpaste cap opener for Sarah**
