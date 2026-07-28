@@ -56,7 +56,13 @@ for emptying, without lifting the pot off its perch/shelf.
 - **Corners use a chamfer + G2 curvature blend**, not a circular fillet —
   tangent- and curvature-continuous transitions (raised-cosine curvature
   profile) so there's no "step" a fingertip or a layer-stair density change
-  can find, unlike the plain arc fillets used before v024.
+  can find, unlike the plain arc fillets used before v024. The base
+  (skirt) corner's chamfer and blend length are sized together
+  (`ch_bot`/`blend_l`) so the blend keeps pace with the chamfer and the
+  corner stays close to fully rounded rather than regrowing a flat facet
+  — the base corner also shares the back wall's flat Y-span with the
+  drawer slot, capping `ch_bot` at roughly 9.4mm before the slot-width
+  assert fails.
 - **Drainage holes are hexagonal, pointed along pot-X** so their points
   face print-vertical in the sideways print orientation, avoiding overhangs
   on the hole walls.

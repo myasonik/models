@@ -1,5 +1,23 @@
 # Marsh Repot — History
 
+## v034
+Skirt corner softened (user: brim peel chips a corner on the bed-contact
+wall). Measured the existing G2 blend rather than guessing: at
+`ch_bot=5`/`blend_l=8` the blend already consumed ~95% of the chamfer edge
+(only ~0.35mm flat remained total) — the base corner was already close to
+a true curve, just a small one. Softening it further means growing the
+radius, not adding more curve to the same size: `ch_bot` 5 -> 8,
+`blend_l` 8 -> 10 together (`blend_l` has to move with `ch_bot` or the
+blend falls behind and leaves *more* flat facet, not less — verified:
+`ch_bot`=8 with `blend_l` left at 8 leaves ~3mm flat). Result: corner
+reach 7.07 -> 11.31mm, flat facet remaining ~0.97mm total, spreading the
+curvature (and so the brim-peel stress) over a longer, gentler arc.
+`ch_bot`=8 leaves 1.4mm of margin on the `slot_w`/`ch_bot` assert (the
+hard ceiling is ~9.4mm — the slot and the base corner share the back
+wall's flat span). `blend_l` is shared with the rim chamfer (`ch_top`),
+so the rim corner also gets a little smoother as a side effect — harmless,
+not the target of this change.
+
 ## v033
 End-wall reinforcement (user: back wall on the printer flexes more than
 the others, and the opposite wall too — both print with their 3.2mm
