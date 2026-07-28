@@ -1,5 +1,33 @@
 # Marsh Repot — History
 
+## v035
+Finger-pull recess enlarged (user, from a print: opening too narrow to
+get a finger in; some depth still available; wants a more positive
+catch). Three params, each checked against the assert it shares before
+moving:
+
+- **POCKET_W** 40 -> 48mm: wider mouth. The pot's sill notch is required
+  to stay `>= pocket_w + 2` (assert), so `notch_w` follows: 44 -> 52mm
+  (still 10mm under its own `slot_w - 8` ceiling). Pocket half-width now
+  23.2mm inside a 34.5mm-half-width face plate — 11.3mm of material left
+  on each side, unchanged margin logic from before.
+- **POCKET_D** 7.2 -> 8.4mm: deeper. This one had almost no headroom — the
+  web-thickness assert (`face_t - face_setback + sill_h*tan(draft) -
+  pocket_d >= 1.6`) was passing with only 0.16mm to spare at the old
+  values. `face_t` grows to match (9.0 -> 10.4mm) purely to restore margin
+  (0.36mm) for the deeper cut; it doesn't change the plate's visible outer
+  face (that's fixed by the `face_x0` draft-plane trim, independent of
+  `face_t` — `face_t` only sets how much raw stock exists behind the
+  recess before the trim).
+- **HOOK_D** 2.0 -> 3.0mm: taller lip. `pocket_z1` (the hook shelf itself)
+  is already at its own ceiling (`face_h - 3`, an equality already at
+  v024), so it can't grow without growing `face_h`, which is set by the
+  pot's `slot_open` — a bigger cross-part change than asked for. `hook_d`
+  — the undercut's own depth, i.e. how far the lip actually overhangs for
+  a fingertip to hook under — had plenty of headroom once `pocket_d`
+  grew (limit is `hook_d < pocket_d - 1.6` = 6.8mm), so that's the lever
+  pulled instead. Verified: 3.0 + 1.6 < 8.4.
+
 ## v034
 Skirt corner softened (user: brim peel chips a corner on the bed-contact
 wall). Measured the existing G2 blend rather than guessing: at

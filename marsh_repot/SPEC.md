@@ -19,7 +19,8 @@ for emptying, without lifting the pot off its perch/shelf.
   in the back wall. Retained by a detent (bump-and-pocket click) so it
   doesn't slide out under vibration, releases with a finger pull. The
   finger-pull recess in the tray's face plate is reachable from underneath
-  the assembled pot.
+  the assembled pot: 48mm wide, 8.4mm deep, with a 3mm hook undercut a
+  fingertip catches behind.
 - Fits the Snapmaker U1's 270 x 270 x 270mm build volume in its print
   orientation (well within — ~185mm tall as printed).
 - Print orientation: the pot prints lying on its back (+X, drawer) wall,
@@ -68,3 +69,12 @@ for emptying, without lifting the pot off its perch/shelf.
   on the hole walls.
 - **Retention detent** (bump-and-pocket) rather than a reverse-inclined
   channel, to avoid costing basin depth or tilting the whole slot geometry.
+- **Finger-pull recess dimensions are interdependent, not independent
+  dials.** `pocket_z1` (the hook shelf height) is already at its own
+  ceiling (`face_h - 3`); growing it further means growing `face_h`, which
+  is set by the pot's `slot_open`, not a tray-only change. `pocket_d`
+  (recess depth) is capped by how much stock exists behind it before the
+  face plate's web drops under 1.6mm, so `face_t` has to grow whenever
+  `pocket_d` does. `pocket_w` (recess width) is capped by the pot's sill
+  notch, which must stay `>= pocket_w + 2` so the assembled recess is
+  reachable from underneath.
