@@ -180,23 +180,25 @@ excellent working references.
 
 1. Clarify the ask (Step 0), then get a versioned path:
    `.claude/skills/openscad/scripts/version-scad.sh <name>`
-2. Write the model. Keep user-tweakable parameters (grid size, height,
-   divisions) as named variables at the top of the file. First version: also
-   create the model's `SPEC.md` and `HISTORY.md` per the openscad skill —
-   Step 0's answers (footprint, height, base, interior, niceties) are the
-   spec's Requirements section.
-3. Render and **read the echo output**: every bin prints its bounding box and
-   a height breakdown. Confirm the numbers match the ask (drawer clearance,
+2. **Write `SPEC.md` before any code**, per the openscad skill's *The spec
+   comes first*. Step 0's answers (footprint, height, base, interior,
+   niceties) are its Requirements section — plus the grid count, the resulting
+   footprint in mm, and the drawer or baseplate clearance it has to land in.
+3. Write the model against that spec. Keep user-tweakable parameters (grid
+   size, height, divisions) as named variables at the top of the file. Then
+   add the `HISTORY.md` entry.
+4. Render and **read the echo output**: every bin prints its bounding box and
+   a height breakdown. Confirm the numbers match the spec (drawer clearance,
    internal height) instead of eyeballing.
-4. Render verification views and read the PNGs:
+5. Render verification views and read the PNGs:
    - three-quarter (`--camera 0,0,0,68,0,28,0`) — overall shape, compartments
    - bottom (`--camera 0,0,0,180,0,30,0`) — base profile and hole pattern;
      this is where a broken base is visible and it's the side you can't unsee
      after printing
    - front (`--camera 0,0,0,90,0,0,0`) — height, lip, tab geometry
-5. Iterate as new versions (`_002`, `_003`, …) per the openscad skill,
-   including its per-version `SPEC.md` update and `HISTORY.md` entry.
-6. Finish with `/print-audit`, then `/export-stl`.
+6. Iterate as new versions (`_002`, `_003`, …) per the openscad skill — the
+   `SPEC.md` change lands first, then the code, then the `HISTORY.md` entry.
+7. Finish with `/print-audit`, then `/export-stl`.
 
 ## Printing notes
 
