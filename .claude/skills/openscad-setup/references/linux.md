@@ -22,11 +22,24 @@ everything works:
   <https://openscad.org/downloads.html#snapshots> and
   `apt install openscad-nightly`. The package installs the binary as
   `openscad-nightly` and can coexist with a stable `openscad`.
-- **Fedora**: the `openscad-nightly` COPR, same binary name.
+- **Fedora**: no working option. The distro repos carry only 2021.01, and
+  the `openscad-devel` COPRs are dead (their newest chroot is EPEL 7).
+  Use the AppImage below.
 - **Arch**: `openscad-git` from the AUR.
-- **Any distro (AppImage)**: download the nightly AppImage from the same
-  page, `chmod +x` it, and point `OPENSCAD_BIN` at it (see below). On
-  Ubuntu 22.04+ AppImages also need `apt install libfuse2`.
+- **Any distro (AppImage)**: the fallback that always works, and the only
+  route on Fedora. Rather than running the AppImage in place, extract it and
+  drop a launcher on `PATH` — no FUSE dependency, no `OPENSCAD_BIN`, no
+  `~/.bashrc` edit, and no root:
+
+  ```bash
+  .claude/skills/openscad-setup/scripts/update-openscad-appimage.sh
+  ```
+
+  That script does the whole install, not just updates: it picks the newest
+  snapshot, verifies its SHA-256, extracts it to
+  `~/.local/lib/openscad-nightly/`, and writes a launcher at
+  `~/.local/bin/openscad-nightly`. Since `~/.local/bin` is normally on `PATH`,
+  discovery step 3 below finds it.
 - Avoid the Snap/Flatpak builds for this project: their sandboxing and
   wrapper-command invocation don't play well with `OPENSCAD_BIN` and the
   scripts' direct execution.
@@ -50,7 +63,9 @@ finds it and no configuration is needed.
 
 ## When you do need `OPENSCAD_BIN`
 
-Set it for an AppImage, a self-built binary, or to pin a specific build:
+The extracted-AppImage install above doesn't need it. Set it for a
+self-built binary, an AppImage you'd rather run in place, or to pin a
+specific build:
 
 ```bash
 export OPENSCAD_BIN="$HOME/apps/OpenSCAD-nightly.AppImage"
@@ -69,6 +84,37 @@ chmod +x .claude/skills/*/scripts/*.sh
 Everything else copies cleanly: the scripts already use LF line endings, and
 all `.scad` include paths are lowercase and match the on-disk names, so the
 case-sensitive filesystem changes nothing.
+
+## Keeping the AppImage current
+
+A distro package updates with the system; an extracted AppImage does not.
+OpenSCAD publishes snapshots to <https://files.openscad.org/snapshots/> with
+no `latest` symlink, no zsync data, and no update info embedded in the
+AppImage, so `--appimage-update` does nothing. Checking is a manual step:
+
+```bash
+# report only
+.claude/skills/openscad-setup/scripts/update-openscad-appimage.sh --check
+
+# install the newest snapshot if there is one
+.claude/skills/openscad-setup/scripts/update-openscad-appimage.sh
+```
+
+Snapshots land every few days, and this repo does not track OpenSCAD features
+closely — checking when something misbehaves, or every few months, is enough.
+Re-run the verification below after any update.
+
+**If you check by hand, match both filename shapes.** Older snapshots carry a
+build-number suffix (`OpenSCAD-2026.01.02.ai30348-x86_64.AppImage`); newer
+ones dropped it (`OpenSCAD-2026.08.19-x86_64.AppImage`). A pattern requiring
+the `.aiNNNNN` suffix matches only stale builds while looking like it worked.
+The listing is also not in date order, so sort before taking the last entry:
+
+```bash
+curl -s https://files.openscad.org/snapshots/ \
+  | grep -oE 'OpenSCAD-[0-9]{4}\.[0-9]{2}\.[0-9]{2}(\.ai[0-9]+)?-x86_64\.AppImage' \
+  | sort -u | tail -1
+```
 
 ## 4. Headless machines only
 
