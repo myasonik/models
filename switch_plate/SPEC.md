@@ -1,10 +1,9 @@
 # Switch Plate — Design Specification
 
 All dimensions in mm unless noted. Both parts print without slicer
-supports. The cover — which cannot print face-down because of the
-raised emblem — carries its own modeled sacrificial props inside the
-cavity; they snap out before assembly, and supports must never touch
-the visible face or emblem.
+supports. The cover prints face-up, and carries its own modeled
+sacrificial props inside the cavity; they come out before assembly, and
+supports must never touch the visible face.
 
 ## 1. What it is
 
@@ -21,13 +20,16 @@ A screwless two-gang US wall plate in two printed parts:
   through bayonet slots in the side walls), slide down 5. Each lug's
   45° outward-sloping top wall wedges the cover toward the wall as it
   slides — french-cleat action — until the face seats on the rim.
-  Gravity keeps it wedged; a thumb notch on the bottom edge helps slide
-  it back up to remove. The blank right gang carries a raised 3D emblem.
-  **The current emblem is a placeholder** (roundel + star + dome) that
-  exists to validate the supported print process; the final artwork — a
-  3D relief of the coat of arms (ash tree between a bear rampant and a
-  fox rampant, whose 2D art is kept in the source) — will replace it
-  without changing the process.
+  Gravity keeps it wedged. To remove it, grip the cover's sides and
+  push it up 5, then lift it off the lugs. The bottom edge carries no
+  notch: the cover stands 6 proud of the wall with a beveled edge,
+  which is grip enough, and a notch would break that edge line.
+  **The right gang is blank.** A raised relief of the coat of arms — an
+  ash tree between a bear rampant and a fox rampant — belongs there
+  eventually, and its 2D art stays in the source. The placeholder that
+  stood in for it is switched off (`emblem = false`) while the plate's
+  fit and print are still being settled, so every test print costs less
+  and the face is one flat surface.
 
 `part = "base" | "cover" | "both"` selects the layout; `"both"` is
 ~257 mm wide — render one part at a time for smaller beds.
@@ -41,58 +43,111 @@ A screwless two-gang US wall plate in two printed parts:
 | Box device screws | 3-9/32 in, 6-32 | 83.34 (`2*box_dy`) |
 | Toggle bat opening (nominal) | ~10.4 × 24 | cover 11.5 × 25 (with play) |
 
-The 125 × 125 footprint is oversize ("jumbo") relative to a standard
+The 129 × 129 footprint is oversize ("jumbo") relative to a standard
 114 × 116 two-gang plate — deliberate, so the cover walls and snap
 travel fit outside the device envelope.
 
 ## 3. Cover
 
-- Outer shell 125 × 125 × 5.2 deep (`cov_w/cov_h/cov_d`), corner
-  radius 8. The depth is derived, not chosen: rim-top height + face
-  thickness − back reveal (4.0 + 2.0 − 0.8).
-- Face 2.0 thick (`face_t`, 10 layers at 0.2); walls 1.6 (`wall_t`,
+- Outer shell 5.8 deep (`cov_d`), corner radius 8 (`cov_r`). The depth
+  is derived, not chosen: rim-top height + face thickness − back reveal
+  (4.0 + 2.0 − 0.2). The walls stand 3.8 tall from the back edge to the
+  face's inner surface, and cover all but 0.2 of the base's height.
+- The reveal is the only free variable in that stack, and it is worth
+  stating why. The face's height above the wall is the base's height
+  plus the face thickness; the reveal does not enter it. The walls'
+  height is the base's height minus the reveal. So shrinking the reveal
+  is the only way to cover more base without standing prouder. Raising
+  the rim adds both together, one for one.
+- The outer surface slopes inward as it rises, in three segments. It is
+  vertical from the back edge to z 2.0 (`bev_z`), at the full 129 × 129
+  outline (`cov_w/cov_h`). It then bevels 0.8 in (`bev_wall`) over
+  1.8 — 24.0° from vertical — reaching 127.4 square at the face plane.
+  It then chamfers 2.0 in (`bev_face`) over 2.0 — 45° — reaching
+  123.4 square at the face's outer surface. The eye reads the stack as a ramp, not a
+  cliff.
+- Three things fix that profile, and none of them are free choices:
+  - The bevel starts at z 2.0, the layer above the cleat's retention
+    lip top at 1.9. The lip keeps its full 1.6 thickness.
+  - The wall bevel stops at 0.8 in, because the base's rim rises to the
+    face plane at half-width 60.5. The cavity therefore stays vertical
+    at half-width 60.9 for the full depth, and 0.8 (2 lines) is the
+    least wall to leave where the bevel meets the face.
+  - Above the face plane the material is solid face, so the chamfer
+    there takes any angle. 45° matches the countersinks and the cleat
+    bevels.
+- Face 2.0 thick (`face_t`, 10 layers at 0.2); walls 1.6 at the lip
+  (`wall_t`,
   4 perimeters at 0.4). The face is the only thing between the wall and
   the room, so it is as thin as a 125-square PLA panel with a 1.6 wall
   ring and a stiffening rib can be without feeling flexy.
 - Toggle opening 11.5 × 25 through the face, left gang center
   (−23.02, 0).
-- Raised emblem on the face, right gang center, 5.9 proud (`emb_h`),
-  placeholder geometry: roundel plateau d 40 × 1.2, five-point star
-  r 16 extruded 2.2 with a 55% taper, center dome r 5 squashed to
-  2.5 tall.
+- No relief on the face: `emblem = false`, so the outer face is flat
+  and its highest point is the face itself. The placeholder geometry
+  (roundel plateau d 40 × 1.2, five-point star r 16 extruded 2.2 with a
+  55% taper, centre dome r 5 squashed to 2.5 tall, 5.9 proud in total)
+  stays in the source behind that flag. Turning it back on adds `emb_h`
+  to the stack and nothing else.
 - Four bayonet slots through the side walls at y = ±28 (`hook_y`):
   a locked pocket fitting the lug with 0.3 clearance (`slot_clr`) on
-  its sides and underside, cut on the **exact** lug bevel line at its
-  upper end so the cleat bottoms out just as the face meets the rim,
-  and **open at the top straight up to the face's inner surface** — the
+  its sides and underside, and its upper end cut parallel to the lug's
+  bevel but 0.15 clear of it (`bevel_clr`), so the **rim is the only
+  hard stop**. Cutting it on the exact bevel line stops the cover twice
+  at once — on the bevel and on the rim — and any printing tolerance
+  then decides which wins, leaving the face proud of the rim when the
+  bevel wins. With the clearance the cover slides about 0.15 further,
+  lands on the rim, and the wedge stays loaded. The slot is also **open at the top straight up to the face's inner surface** — the
   lug top and the rim top are one plane and the face seats on both, so
   no wall is needed over the lug and none is modeled (the face bridges
   the slot). The wall left under the pocket — the retention lip that
   catches the lug's underside if the cover is pulled — is 1.3 tall
   (lug underside 2.4 − 0.3 clearance − 0.8 reveal). A slide corridor 5
   (`trav`) below the pocket, and an entry mouth open past the back edge
-  for press-on.
-- Thumb notch 12 wide × 3 tall on the bottom edge (slide-up grip).
+  for press-on. Slide travel to seat is 5 plus the bevel clearance.
 - Stiffening rib 1.6 wide × 100 long between the gangs, hanging from
   the face's inner surface down to 0.4 clear of the base plate's front
   (1.2 tall). 100 long so it clears the base rim during the raised
   press-on.
 - Sacrificial print props (print layout only, not part of the design):
-  seven 0.8-thick walls across the cavity on a ≤17 pitch (`sac_ys`),
-  split 2.3 clear of the stiffening rib and stopping 1.5 short of the
-  side walls, plus a 0.6-thick spine under the rib. Each necks to a
-  0.3 knife-edge fused 0.1 into the surface it props, so it snaps out
-  through the open back after printing.
+  seven 0.8-thick walls across the cavity at y = 0, ±13.5, ±30, ±46.5
+  (`sac_ys`), split 2.3 clear of the stiffening rib and stopping 0.8
+  short of the side walls. Two things fix those positions:
+  - **±13.5 brackets the toggle opening**, whose short edges sit at
+    ±12.5. The face's first layer bridges along y, so those edges and
+    the perimeter loop around the hole print over air. At the old ±17
+    they hung 4.5 clear of any support and sagged; at ±13.5 they hang
+    1.0 clear. The rest of the pitch follows from there, at 16.5 or
+    less.
+  - **0.8 from the side walls**, not 1.5. Whatever the props do not
+    reach becomes bridge lines running the cavity's full 121.8 length
+    with nothing under them, and those sag and wander. 0.8 leaves two
+    such lines instead of four, and is still two line widths of air, so
+    no prop welds to a wall. Reaching the wall outright would weld 14
+    prop ends to it, about 40 mm². Each tapers to a 0.4 top (`sac_neck`) — one line width,
+  so the slicer prints it as drawn — and stops **0.2 below the face's
+  inner surface** (`sac_gap_z`, one layer of air). The prop catches the
+  face's sag and never bonds to it. Two rails 1.2 wide × 1.0 tall at
+  x = ±26 (`rail_x/rail_t/rail_h`) tie each half's seven walls into one
+  comb, so a half lifts out in a single piece.
+- The rib's spine is the one prop that must bond. The rib hangs from the
+  face and starts 1.2 below it, so the rib's first layer needs an
+  anchor. The spine is 0.6 thick and stops 0.4 short of the rib. It
+  reaches the rib through teeth 2.0 long on a 10.0 pitch
+  (`spine_tooth/spine_pitch`), each necked to 0.4 and fused 0.1 into
+  the rib. The rib's first layer bridges the 8.0 gaps between teeth.
+  The weld totals 8 mm² instead of 40, and it peels one tooth at a
+  time.
 
 ## 4. Base
 
-- Outline 121.0 wide × 116.0 tall (`base_w/base_h`), corner radius
+- Outline 125.0 wide × 120.0 tall (`base_w/base_h`), corner radius
   6.4 — the cover's inner outline minus 0.4 lateral clearance (`clr`)
   per side, and 5 (`trav`) shorter at the **bottom** (outline centered
   at y = +2.5) so the raised cover fits over it at entry.
 - The base is an open frame, 2.4 thick (`base_t`) everywhere it bears
   on the wall; nothing fills the gangs. Members:
-  - **Perimeter band** 5 wide (`band_w`) around the outline — the wall
+  - **Perimeter band** 4.8 wide (`band_w`, 12 lines) around the outline — the wall
     bearing surface under the rim, and the frame's stiffness.
   - **Spine** 6 wide (`spine_w`) at x = 0, top band to bottom band. Sits
     under the cover's stiffening rib with 0.4 axial clearance.
@@ -100,14 +155,16 @@ travel fit outside the device envelope.
     screw's y (±30.16 left, ±41.67 right), from the side band through
     the screw seat to the spine — a ladder tying both sides to the
     spine, so the rim can't rack.
-  - **Right screw pads** d 10.5 (`pad_d`, countersink 7.5 + 1.5 wall) on
-    the right arms at the box-screw centers. Full thickness, on the bed.
-  - **Left screw seats are the arms themselves** — no pad. The yoke's
-    plaster ears begin ~4.4 above/below the plate-screw holes (ear inner
-    end at |y| ≈ 34.6, measured), at the same proud height as the strap
-    but possibly wider than the relief; a wider seat would land its
-    full-thickness part on an ear corner and rock the frame. A 6.4 arm
-    reaches |y| = 33.36, 1.25 clear of the ears.
+  - **Right screw pads** d 10.8 (`pad_d`, 27 lines: countersink 7.6 plus
+    4 lines of wall each side) on the right arms at the box-screw
+    centers. Full thickness, on the bed.
+  - **Left screw seats** are d 8.0 bosses (`boss_d`) on the arms at the
+    yoke screws. Each boss lies wholly inside the relief (±4.0 in x,
+    relief half-width 11), so it stands 1.2 off the wall and clears the
+    plaster ears. Only full-thickness material has to avoid the ears,
+    which begin ~4.4 past the plate-screw holes (inner end at |y| ≈
+    34.6, measured). The boss leaves 1.25 of solid bridge on each side
+    of the punch-out's score ring.
   Everything a real plate would have done — hiding the box, supporting
   the face — the cover does; the frame only has to hold four screws and
   a rim in plane. The toggle needs no pass-through: the left gang is
@@ -118,8 +175,10 @@ travel fit outside the device envelope.
   nothing in the cavity needs more height (countersunk heads sit
   ~flush).
 - Four cleat hook lugs on the rim's outer faces at y = ±28 (`hook_y`):
-  each 10 wide (`hook_w`), protruding 1.9 (`hook_p`, ending 0.1 shy of
-  the cover wall's outer surface), underside coplanar with the plate
+  each 10 wide (`hook_w`), 1.6 thick (`hook_t` = `rim_h`), protruding
+  1.6 (`hook_p`, 4 lines — the tip
+  lands 0.4 shy of the cover wall's outer surface, with 1.2 of
+  engagement inside the wall), underside coplanar with the plate
   front at z = 2.4 (`hook_z` = `base_t`), 1.6 thick (`hook_t`) so its
   top is coplanar with the rim top, with the top (+y) wall sloping
   outward at 45° (rising `hook_t` over its depth) — the cleat bevel.
@@ -127,64 +186,114 @@ travel fit outside the device envelope.
   slide direction).
 - Four screw holes d 3.9 (`screw_d` — 6-32 free fit with allowance for
   printed-hole shrinkage), 45° countersunk (prints support-free):
-  - box pair at (+23.02, ±41.67): d 7.5 × 1.8 deep (`cs_d/cs_depth`),
+  - box pair at (+23.02, ±41.67): d 7.6 × 1.85 deep (`cs_d/cs_depth`),
     head flush;
-  - yoke pair at (−23.02, ±30.16): d 5.8 × 0.95 deep (`cs_d_l`) — as
-    much cone as a 6.4 arm can hold with a 0.3 wall at the top edge.
-    The 7.1 flat head sits ~0.6 proud of the arm, top at ≈ z 3.0, 1.0
-    under the cover face; it bears on the cone from d 3.9 to 5.8, all
-    within the arm. Each yoke hole is closed at the back by a **0.2
-    sacrificial membrane** (`memb_t`, one layer at z 1.2–1.4) so the
-    relief bridge prints as one continuous anchored sheet — poke both
-    out from the back before mounting.
-- Back relief 22 wide × 92 × 1.2 deep (`relief_w/relief_d`) behind the
-  left gang: the only members inside it — the middle 22 of each left
-  arm — are set 1.2 off the wall. Width is the measured 17.1 strap
-  plus 2.45 margin per side (the arms screw to the strap, so the relief
-  is self-centred on it); depth suits a strap sitting on the wall
-  surface. The left arms bear on the yoke through the screws, not on
-  the wall. Nothing else crosses the yoke, its ears, or the box-screw
-  heads at y ±41.7.
+  - yoke pair at (−23.02, ±30.16): d 5.6 × 0.85 deep (`cs_d_l`, 14
+    lines), leaving 3 whole lines of boss around it. The 7.1 flat head
+    sits 0.75 proud of the boss, top at z 3.15, still 0.85 under the
+    cover face at 4.0.
+- The **bottom** yoke hole is closed at the back by a **0.2 sacrificial membrane**
+  (`memb_t`, one layer at z 1.2–1.4), so the relief bridge prints as one
+  anchored sheet. A **score ring** 0.8 wide (`score_w`, 2 line widths)
+  cut through that one layer separates the membrane into a punch-out
+  disc d 3.9, held by three 0.4 tabs (`tab_w`, one line, at 90/210/330°).
+  The ring
+  makes the disc a separate island: the slicer closes a perimeter around
+  it and changes direction, instead of running bridge lines straight
+  from the sheet through the disc. The disc then shears at the tabs
+  (3 × 0.4 × 0.2 = 0.24 mm², about 12 N in PLA) instead of tearing the
+  sheet. Push both discs out from the back before mounting. The disc
+  matches the hole diameter, so it passes out through the front. The
+  top yoke hole has no membrane and no ring: its arm is solid, so the
+  hole runs straight through with nothing to bridge.
+- Back relief, **bottom-left arm only**, 1.2 deep (`relief_d`). The
+  pocket runs from the left band's inner edge at x = −57.7
+  (`relief_x1`) to x = −12.02 (`relief_x2`), and 8.8 across
+  (`relief_arm_w`) — wider than the arm and its boss, so that whole
+  length of arm thins to 1.2. It clears the measured 17.1 strap and
+  everything else proud of the wall out to the band. That arm bears on
+  the yoke through its screw, not on the wall.
+- The **top-left arm has no relief**. The strap is flush with the wall
+  there, so the arm stays solid 2.4 across its full length and bears on
+  both. This is the frame's one rigid seat on the switch side.
+- Sacrificial props under the four cleat lugs (print layout only): a
+  free-standing block per lug, 1.5 wide × 9.6 × 2.2 tall (`lp_clr`,
+  `lp_gap`). Each stands on the bed under its lug, 0.4 clear of the
+  band's outer face so it never fuses sideways, and stops 0.2 below the
+  lug's underside so it never fuses upward. Nothing else can hold that
+  underside up: the cover's retention lip slides into exactly that
+  space, so a permanent gusset there breaks the cleat. Lift the four
+  blocks away after printing.
+- Sacrificial props under the bottom-left pocket (print layout only,
+  not part of the design): five fins 0.8 thick across the pocket at
+  x = −47.5, −39, −30.5, −26.5, −19.5 (`bp_xs`), each necked to 0.4 and
+  stopping 0.2 below the pocket's ceiling (`bp_gap`), tied by a rail
+  0.8 × 0.6 (`bp_rail_h`) on the bed. They cut the 43.5 span into
+  bridges of 8.5 or less, and two of them bracket the score ring. Push
+  the comb out of the open pocket after printing.
 
 ## 5. Assembly stack (z from the wall)
 
 - Base back on the wall at z = 0; plate front at 2.4; rim top at 4.0.
 - Lugs span z = 2.4–4.0, tops coplanar with the rim top.
-- Cover back edge at z = 0.8 (`cov_back_z`) — a slim perimeter reveal;
-  retention lip 0.8–2.1; face inner **seats on the rim top and lug tops
-  at 4.0** (no axial gap — the cleat wedge closes it); face outer at
-  6.0; emblem tip at 11.9.
-- The only thing setting the face height is the cleat stack: reveal
-  0.8 + lip 1.3 + clearance 0.3 + lug 1.6 = 4.0. Thinning the face or
-  base below that buys nothing; going lower means a thinner lug and lip.
-- Verified by boolean check: base ∩ assembled cover = zero volume
-  (tangent contact only, at the rim seat and along the lug bevels);
-  same at the +5 entry position.
+- Cover back edge at z = 0.2 (`cov_back_z`) — one layer of reveal, so
+  the wall surface is never the stop; retention lip 0.2–2.1; face inner
+  **seats on the rim top and lug tops at 4.0** (no axial gap — the cleat
+  wedge closes it); face outer at 6.0, which is the plate's highest
+  point while the emblem is off.
+- The cleat stack sets the face height: reveal 0.2 + lip 1.9 +
+  clearance 0.3 + lug 1.6 = 4.0. Shrinking the reveal moves that height
+  into the lip, which is why the lip is 1.9 and not 1.3.
+- Verified by boolean check: base ∩ assembled cover = zero volume at
+  the seated position (tangent contact at the rim seat), at that
+  position slid 0.15 further along the bevel clearance, and at the +5
+  entry position.
 
 ## 6. Printability requirements
 
 - **Cover prints face-up, slicer supports OFF**: walls and props on the
-  bed, face and emblem on top. The face bridges the ≤17 spans between
+  bed, face on top. The face bridges the ≤17 spans between
   the sacrificial props (hidden interior surface — sag is cosmetic
-  only); snap the props out through the open back before assembly. Use
+  only); lift the two prop combs out through the open back, then peel
+  the rib spine off tooth by tooth, before assembly. Use
   a brim — bed contact is the 1.6 wall ring plus the prop feet. The
-  visible face prints as clean top layers; the emblem must stay
-  self-supporting in this direction (≤45° overhangs on an upward-facing
-  relief — the placeholder's vertical roundel edge, inward-tapering
-  star, and dome all qualify).
+  visible face prints as clean top layers. Any relief added later must
+  stay self-supporting in this direction — ≤45° overhangs on an
+  upward-facing surface. The placeholder qualifies: vertical roundel
+  edge, inward-tapering star, and dome.
 - **Base prints back-down, support-free**; its downward faces are the
-  45° countersinks, the left arms' 1.2-thick relief bridges — two
-  straight 6.4 × 22 bridges, every line anchored on the relief wall at
-  both ends, the hole closed by the membrane — and the
+  45° countersinks, the bottom-left arm's 1.2-thick relief ceiling —
+  43.5 long, broken into bridges of 8.5 or less by the fins, with the
+  hole closed by its membrane — and the
   lug undersides — 1.9-deep flat cantilevers (at the plate-front level)
-  that print with minor droop, acceptable because the lugs' working
-  faces are their end bevels, tops, and vertical sides.
+  that print onto their sacrificial blocks. Without a block the lug's
+  first layer extrudes into open air across its full 1.9 depth, curls,
+  and leaves an uneven underside — which is the surface the cover's lip
+  catches on a 0.3 clearance.
+- **Use a brim on the base too**, not only on the cover. Its 4001 mm² of
+  bed contact is spread over narrow members — a 4.8 band, 6.4 arms — and
+  nothing wide holds their ends down.
 - One manifold solid per part; no console warnings.
-- All wall-forming thicknesses are multiples of the 0.4 line width
-  (1.6, 2.0, 2.4).
+- **Every material thickness is a whole multiple of the 0.4 line width
+  (`lw`), and every z feature a whole multiple of the 0.2 layer height
+  (`lh`).** Both are named parameters, and the thicknesses are written
+  as multiples of them, so a nozzle change re-derives the part. The
+  slicer then never has to fill a leftover narrower than one line, which
+  is what it does with ragged variable-width beads. Clearances keep
+  their own values — `clr` 0.4, `slot_clr` 0.3, `lp_clr` 0.4 — because
+  they are air, not extrusions.
+- Quantizing widths cannot fix a tangency: where a round screw seat runs
+  into a straight arm, the gap between them narrows continuously to
+  zero, and no choice of diameter changes that. So the frame's plan gets
+  a morphological close — dilate by 1.2 (`fillet`, 3 lines), then erode
+  by the same — which fillets every inside corner to 1.2 and fills those
+  wedges. It adds 7.2 mm² (0.2%) and leaves every convex outline, seat
+  diameter, and hole unchanged.
 - Countersinks and cleat bevels are 45° — self-supporting. In the
   face-up cover print the slots are open-topped notches in the wall
   that the face's first layer bridges (≤15.6 span, 1.6 wide).
+- The cover's outer surface only moves inward as z rises, so it prints
+  face-up with no overhang anywhere on the visible edge.
 - Slice the base with **bridge infill direction = 180** (Orca reads 0
   as "auto" and 180 as 0° — i.e. along x, along the arms) and **thick
   external bridges on**; auto direction chose 45° on the old plate and
