@@ -1,0 +1,29 @@
+{
+    "type": "filament",
+    "name": "Planter PETG @Snapmaker U1 (0.4 nozzle)",
+    "from": "User",
+    "is_custom_defined": "1",
+    "inherits": "Generic PETG",
+    "compatible_printers": [
+        "Snapmaker U1 (0.4 nozzle)"
+    ],
+    "nozzle_temperature": [
+        "238"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "245"
+    ],
+    "filament_flow_ratio": [
+        "1.0"
+    ],
+    "fan_min_speed": [
+        "20"
+    ],
+    "fan_max_speed": [
+        "50"
+    ],
+    "filament_settings_id": [
+        "Planter PETG @Snapmaker U1 (0.4 nozzle)"
+    ],
+    "version": "2.2.50.2"
+}

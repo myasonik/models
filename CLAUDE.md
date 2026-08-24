@@ -42,7 +42,8 @@ Use the skills in `.claude/skills/` rather than calling OpenSCAD directly:
 `openscad` for versioning, `preview-scad` to render, `print-audit` before
 export, `export-stl` to produce the STL, `gridfinity` for anything on the
 42 mm grid, `archive-model` to retire one, `u1-reference` for printer geometry
-and reference meshes, `openscad-setup` when the toolchain itself misbehaves.
+and reference meshes, `orca-presets` for slicer and filament profiles,
+`openscad-setup` when the toolchain itself misbehaves.
 
 Reference geometry a model is designed *around* — vendor meshes, scans,
 downloaded parts — lives in a skill, never in a model folder. Nothing in this
