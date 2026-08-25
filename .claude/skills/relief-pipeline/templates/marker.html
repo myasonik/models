@@ -1,0 +1,257 @@
+<title>Relief Marker</title>
+<style>
+:root{--bg:#14161a;--panel:#1e2127;--edge:#2e333c;--ink:#e8e6e1;--mut:#9aa0ab;--keep:#3ec672;--cut:#e5484d;--amber:#d9a441}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+#stage{position:fixed;inset:0;cursor:crosshair;touch-action:none}
+.bar{position:fixed;display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:8px 10px;box-shadow:0 4px 18px rgba(0,0,0,.45)}
+#tools{top:12px;left:12px;flex-wrap:wrap;max-width:min(720px,calc(100vw - 24px))}
+#savebar{top:12px;right:12px}
+#legend{bottom:12px;left:12px;color:var(--mut);font-size:12.5px;max-width:min(700px,calc(100vw - 24px))}
+button{background:#262a31;color:var(--ink);border:1px solid var(--edge);border-radius:7px;padding:6px 12px;font:inherit;cursor:pointer}
+button:hover{border-color:#4a515d}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+button.on{border-color:var(--amber);color:var(--amber)}
+#bKeep.on{border-color:var(--keep);color:var(--keep)}
+#bCut.on{border-color:var(--cut);color:var(--cut)}
+#bSave{background:var(--amber);border-color:var(--amber);color:#17130a;font-weight:600}
+#bSave[disabled]{opacity:.55;cursor:default}
+label{color:var(--mut);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+input[type=range]{width:96px;accent-color:var(--amber)}
+.sep{width:1px;align-self:stretch;background:var(--edge)}
+#status{color:var(--mut);font-size:12.5px}
+kbd{background:#262a31;border:1px solid var(--edge);border-radius:4px;padding:0 5px;font:11px ui-monospace,monospace}
+</style>
+<div id="stage"><canvas id="cv"></canvas></div>
+<div class="bar" id="tools">
+  <button id="bKeep" class="on">Keep</button>
+  <button id="bCut">Remove</button>
+  <button id="bErase">Erase</button>
+  <button id="bPan">Pan</button>
+  <span class="sep"></span>
+  <button id="bBrush" class="on">Brush</button>
+  <label for="size">Size</label><input type="range" id="size" min="6" max="120" value="30">
+  <button id="bFill">Fill</button>
+  <label for="tol">Tolerance</label><input type="range" id="tol" min="1" max="100" value="55">
+  <span class="sep"></span>
+  <button id="bUndo">Undo</button>
+  <button id="bMarks">Show marks</button>
+  <button id="bView">Result view</button>
+</div>
+<div class="bar" id="savebar"><span id="status">No marks yet</span><button id="bSave">Save marks</button></div>
+<div class="bar" id="legend">
+  <span>Keep paints an area back to full white; Remove grays it out — the view is a live preview of what
+  stays. Fill floods smooth surface and stops at height jumps; Tolerance sets how big a jump
+  it may cross, the hover ghost previews the region, and a fill never crosses between figures.
+  &nbsp;Scroll to zoom, <kbd>space</kbd>-drag or middle-drag to pan, <kbd>[</kbd> <kbd>]</kbd> brush size,
+  <kbd>ctrl</kbd><kbd>z</kbd> undo. Save sends the marks back to Claude.</span>
+</div>
+<script id="marks" type="application/json">__MARKS__</script>
+<img id="imN" src="__N__" hidden>
+<img id="imM" src="__M__" hidden>
+<img id="imCur" src="__CUR__" hidden>
+<img id="imT" src="__T__" hidden>
+<img id="imH2" src="__H2__" hidden>
+<img id="imH" src="__H__" hidden>
+<script>
+const PRISTINE='<!doctype html>\n<html>'+document.documentElement.innerHTML+'</html>';
+const IW=__IW__, IH=__IH__;
+let strokes=JSON.parse(document.getElementById('marks').textContent).strokes||[];
+let mode='keep', tool='brush', brush=30, tol=12, viewCur=false, showMarks=false, dirty=false, saving=false;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const imN=document.getElementById('imN'), imM=document.getElementById('imM'),
+      imCur=document.getElementById('imCur'), imH=document.getElementById('imH');
+const mk=()=>{const c=document.createElement('canvas');c.width=IW;c.height=IH;return c};
+const maskC=mk(), tmpC=mk(), shapeC=mk(), dispC=mk(), ovC=mk();
+const mctx=maskC.getContext('2d'), tctx=tmpC.getContext('2d'), sctx=shapeC.getContext('2d'),
+      dctx=dispC.getContext('2d'), octx=ovC.getContext('2d');
+let D=null, Hdata=null, Tdata=null, H16=null;
+let view={s:0.5,tx:0,ty:0};
+function fit(){cv.width=innerWidth;cv.height=innerHeight;
+  view.s=Math.min(innerWidth/IW,innerHeight/IH)*0.96;
+  view.tx=(innerWidth-IW*view.s)/2; view.ty=(innerHeight-IH*view.s)/2; render();}
+function stepFromSlider(v){return Math.round(15*Math.pow(1.06,v))}
+function fillRegionStep(sx,sy,step){
+  sx|=0; sy|=0;
+  const N=IW*IH, seen=new Uint8Array(N), out=new Uint8Array(N);
+  if(sx<0||sy<0||sx>=IW||sy>=IH)return out;
+  const tv=Tdata[sy*IW+sx], q=new Int32Array(N);
+  let qh=0,qt=0;
+  const s0=sy*IW+sx; seen[s0]=1; out[s0]=1; q[qt++]=s0;
+  while(qh<qt){const i=q[qh++], x=i%IW, hv=H16[i];
+    const nb=[x>0?i-1:-1, x<IW-1?i+1:-1, i>=IW?i-IW:-1, i<N-IW?i+IW:-1];
+    for(let k=0;k<4;k++){const j=nb[k];
+      if(j>=0&&!seen[j]&&Tdata[j]===tv&&Math.abs(H16[j]-hv)<=step){
+        seen[j]=1;out[j]=1;q[qt++]=j}}}
+  return out;}
+function fillRegion(sx,sy,t){
+  sx|=0; sy|=0;
+  const N=IW*IH, seen=new Uint8Array(N), out=new Uint8Array(N);
+  if(sx<0||sy<0||sx>=IW||sy>=IH)return out;
+  const hv=Hdata[sy*IW+sx], tv=Tdata[sy*IW+sx], q=new Int32Array(N);
+  let qh=0,qt=0;
+  const s0=sy*IW+sx; seen[s0]=1; out[s0]=1; q[qt++]=s0;
+  while(qh<qt){const i=q[qh++], x=i%IW;
+    const nb=[x>0?i-1:-1, x<IW-1?i+1:-1, i>=IW?i-IW:-1, i<N-IW?i+IW:-1];
+    for(let k=0;k<4;k++){const j=nb[k];
+      if(j>=0&&!seen[j]){seen[j]=1;
+        if(Tdata[j]===tv&&Math.abs(Hdata[j]-hv)<=t){out[j]=1;q[qt++]=j}}}}
+  return out;}
+function regionToCanvas(reg){
+  const c=mk(), g=c.getContext('2d'), id=g.createImageData(IW,IH), d=id.data;
+  for(let i=0;i<reg.length;i++)if(reg[i]){const o=i*4;d[o]=d[o+1]=d[o+2]=d[o+3]=255}
+  g.putImageData(id,0,0); return c;}
+function regionCanvas(st){
+  if(st._rc)return st._rc;
+  const reg = st.s!==undefined ? fillRegionStep(st.f[0],st.f[1],st.s)
+                               : fillRegion(st.f[0],st.f[1],st.f[2]);
+  st._rc=regionToCanvas(reg); return st._rc;}
+function strokePath(g,s,from){
+  g.lineWidth=s.w; g.lineCap=g.lineJoin='round';
+  const p=s.pts;
+  if(p.length===1){g.beginPath();g.arc(p[0][0],p[0][1],s.w/2,0,7);g.fill();return}
+  g.beginPath();g.moveTo(p[from||0][0],p[from||0][1]);
+  for(let i=(from||0)+1;i<p.length;i++)g.lineTo(p[i][0],p[i][1]);
+  g.stroke();}
+function drawShape(g,s,from){ if(s.f)g.drawImage(regionCanvas(s),0,0); else strokePath(g,s,from) }
+function applyStroke(s,from){
+  if(s.c==='k'){mctx.globalCompositeOperation='source-over';
+    mctx.strokeStyle=mctx.fillStyle='#fff';drawShape(mctx,s,from);return}
+  if(s.c==='r'){mctx.globalCompositeOperation='destination-out';
+    mctx.strokeStyle=mctx.fillStyle='#000';drawShape(mctx,s,from);return}
+  sctx.globalCompositeOperation='source-over';sctx.clearRect(0,0,IW,IH);
+  sctx.strokeStyle=sctx.fillStyle='#fff';drawShape(sctx,s,0);
+  sctx.globalCompositeOperation='source-in';sctx.drawImage(imM,0,0);
+  mctx.globalCompositeOperation='destination-out';
+  mctx.strokeStyle=mctx.fillStyle='#000';drawShape(mctx,s,0);
+  mctx.globalCompositeOperation='source-over';mctx.drawImage(shapeC,0,0);}
+function replay(){mctx.globalCompositeOperation='source-over';
+  mctx.clearRect(0,0,IW,IH);mctx.drawImage(imM,0,0);
+  strokes.forEach(s=>applyStroke(s));
+  octx.globalCompositeOperation='source-over';octx.clearRect(0,0,IW,IH);
+  strokes.forEach(s=>{if(s.c==='e'){octx.globalCompositeOperation='destination-out';
+      octx.strokeStyle=octx.fillStyle='#000'}
+    else{octx.globalCompositeOperation='source-over';
+      octx.strokeStyle=octx.fillStyle=(s.c==='k'?'#3ec672':'#e5484d')}
+    drawShape(octx,s)});}
+function compose(){
+  tctx.globalCompositeOperation='source-over';tctx.clearRect(0,0,IW,IH);
+  tctx.drawImage(maskC,0,0);
+  tctx.globalCompositeOperation='source-in';tctx.drawImage(imN,0,0);
+  dctx.globalCompositeOperation='source-over';
+  dctx.drawImage(D,0,0);dctx.drawImage(tmpC,0,0);}
+let cursor=null, needCompose=true, hoverRC=null, hoverTimer=0;
+function hoverPreview(){
+  hoverRC=null;
+  if(tool!=='fill'||!cursor||!H16)return;
+  const x=Math.round(cursor[0]), y=Math.round(cursor[1]);
+  if(x<0||y<0||x>=IW||y>=IH){render();return}
+  hoverRC=regionToCanvas(fillRegionStep(x,y,stepFromSlider(tol)));
+  render();}
+function render(){
+  if(needCompose){compose();needCompose=false}
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#14161a';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.setTransform(view.s,0,0,view.s,view.tx,view.ty);
+  ctx.imageSmoothingEnabled=view.s<1;
+  ctx.drawImage(viewCur?imCur:dispC,0,0);
+  if(showMarks&&!viewCur){ctx.globalAlpha=0.35;ctx.drawImage(ovC,0,0);ctx.globalAlpha=1}
+  if(hoverRC&&tool==='fill'&&!viewCur&&!panning){
+    ctx.globalAlpha=0.4;ctx.drawImage(hoverRC,0,0);ctx.globalAlpha=1}
+  if(cursor&&mode!=='pan'&&tool==='brush'){ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=1/view.s;
+    ctx.beginPath();ctx.arc(cursor[0],cursor[1],brush/2,0,7);ctx.stroke();}
+}
+function toImg(e){const r=cv.getBoundingClientRect();
+  return [(e.clientX-r.left-view.tx)/view.s,(e.clientY-r.top-view.ty)/view.s]}
+let drag=null, panning=null, space=false;
+cv.addEventListener('pointerdown',e=>{
+  cv.setPointerCapture(e.pointerId);
+  if(mode==='pan'||space||e.button===1){panning=[e.clientX,e.clientY];return}
+  if(e.button!==0)return;
+  const c={keep:'k',cut:'r',erase:'e'}[mode];
+  if(tool==='fill'){
+    const p=toImg(e), st={c:c,f:[Math.round(p[0]),Math.round(p[1])],s:stepFromSlider(tol)};
+    strokes.push(st); applyStroke(st); replay();
+    needCompose=true; dirty=true; status(); render(); return;}
+  drag={c:c,w:brush,pts:[toImg(e)]}; strokes.push(drag);
+  applyStroke(drag); needCompose=true; dirty=true; status(); render();});
+cv.addEventListener('pointermove',e=>{
+  cursor=toImg(e);
+  if(tool==='fill'&&!panning){clearTimeout(hoverTimer);hoverTimer=setTimeout(hoverPreview,120)}
+  if(panning){view.tx+=e.clientX-panning[0];view.ty+=e.clientY-panning[1];panning=[e.clientX,e.clientY]}
+  else if(drag){const p=toImg(e),q=drag.pts[drag.pts.length-1];
+    if(Math.hypot(p[0]-q[0],p[1]-q[1])>2){drag.pts.push(p);
+      if(drag.c==='e')applyStroke(drag);else applyStroke(drag,drag.pts.length-2);
+      needCompose=true}}
+  render();});
+addEventListener('pointerup',()=>{if(drag){replay();needCompose=true}drag=null;panning=null;render()});
+cv.addEventListener('wheel',e=>{e.preventDefault();
+  const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  const k=Math.exp(-e.deltaY*0.0012),ns=Math.min(10,Math.max(0.15,view.s*k));
+  view.tx=mx-(mx-view.tx)*ns/view.s; view.ty=my-(my-view.ty)*ns/view.s; view.s=ns; render();},{passive:false});
+function setMode(m){mode=m;
+  for(const pr of [['bKeep','keep'],['bCut','cut'],['bErase','erase'],['bPan','pan']])
+    document.getElementById(pr[0]).classList.toggle('on',pr[1]===m);
+  cv.style.cursor=m==='pan'?'grab':'crosshair';}
+function setTool(t){tool=t;
+  bBrush.classList.toggle('on',t==='brush');
+  bFill.classList.toggle('on',t==='fill');
+  if(mode==='pan')setMode('keep');}
+bKeep.onclick=()=>setMode('keep'); bCut.onclick=()=>setMode('cut');
+bErase.onclick=()=>setMode('erase'); bPan.onclick=()=>setMode('pan');
+bBrush.onclick=()=>setTool('brush'); bFill.onclick=()=>setTool('fill');
+size.oninput=e=>{brush=+e.target.value;render()};
+tol.oninput=e=>{tol=+e.target.value;if(tool==='fill'){clearTimeout(hoverTimer);hoverTimer=setTimeout(hoverPreview,60)}};
+bUndo.onclick=()=>{strokes.pop();dirty=true;replay();needCompose=true;status();render()};
+bMarks.onclick=()=>{showMarks=!showMarks;bMarks.classList.toggle('on',showMarks);render()};
+bView.onclick=()=>{viewCur=!viewCur;bView.classList.toggle('on',viewCur);
+  bView.textContent=viewCur?'Preview':'Result view';render()};
+addEventListener('keydown',e=>{
+  if(e.key===' '){space=true;e.preventDefault()}
+  if(e.key==='[')size.value=brush=Math.max(6,brush-6);
+  if(e.key===']')size.value=brush=Math.min(120,brush+6);
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){bUndo.onclick();e.preventDefault()}
+  render();});
+addEventListener('keyup',e=>{if(e.key===' ')space=false});
+function status(){document.getElementById('status').textContent=
+  strokes.length? strokes.length+' stroke'+(strokes.length>1?'s':'')+(dirty?' — unsaved':' — saved'):'No marks yet'}
+bSave.onclick=async()=>{
+  if(saving)return; saving=true; bSave.disabled=true; bSave.textContent='Saving…';
+  const clean=strokes.map(s=>s.f?{c:s.c,f:s.f}:{c:s.c,w:s.w,pts:s.pts});
+  const json=JSON.stringify({v:1,imgW:IW,imgH:IH,strokes:clean});
+  const doc=PRISTINE.replace(/(<script id="marks"[^>]*>)[\s\S]*?(<\/script)/,(m,a,b)=>a+json+b);
+  try{
+    const art=await window.claude.use('artifact');
+    if(!art)throw new Error('capability unavailable');
+    await art.publish(doc);
+    dirty=false; status();
+    bSave.textContent='Saved ✓';
+  }catch(err){
+    bSave.textContent='Save failed';
+    try{await navigator.clipboard.writeText(json)}catch(e2){}
+    alert('Could not publish ('+(err&&err.message||err)+'). The marks JSON is on your clipboard — paste it to Claude in the chat.');
+  }
+  setTimeout(()=>{bSave.textContent='Save marks';bSave.disabled=false;saving=false;status()},1400);
+};
+let need=6;
+function ready(){if(--need>0)return;
+  const hc=mk(), hg=hc.getContext('2d',{willReadFrequently:true});
+  hg.drawImage(imH,0,0);
+  const id=hg.getImageData(0,0,IW,IH).data;
+  Hdata=new Uint8Array(IW*IH);
+  for(let i=0;i<Hdata.length;i++)Hdata[i]=id[i*4];
+  hg.clearRect(0,0,IW,IH); hg.drawImage(imT,0,0);
+  const td=hg.getImageData(0,0,IW,IH).data;
+  Tdata=new Uint8Array(IW*IH);
+  for(let i=0;i<Tdata.length;i++)Tdata[i]=td[i*4];
+  hg.clearRect(0,0,IW,IH); hg.drawImage(imH2,0,0);
+  const hd=hg.getImageData(0,0,IW,IH).data;
+  H16=new Int32Array(IW*IH);
+  for(let i=0;i<H16.length;i++)H16[i]=hd[i*4]*256+hd[i*4+1];
+  D=mk(); const dc=D.getContext('2d');
+  dc.drawImage(imN,0,0); dc.globalCompositeOperation='multiply';
+  dc.fillStyle='rgb(87,92,117)'; dc.fillRect(0,0,IW,IH);
+  replay(); needCompose=true; fit(); status();}
+for(const im of [imN,imM,imCur,imH,imT,imH2]){if(im.complete)ready();else im.onload=ready}
+addEventListener('resize',fit);
+</script>

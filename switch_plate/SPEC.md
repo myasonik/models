@@ -24,12 +24,13 @@ A screwless two-gang US wall plate in two printed parts:
   push it up 5, then lift it off the lugs. The bottom edge carries no
   notch: the cover stands 6 proud of the wall with a beveled edge,
   which is grip enough, and a notch would break that edge line.
-  **The right gang is blank.** A raised relief of the coat of arms — an
-  ash tree between a bear rampant and a fox rampant — belongs there
-  eventually, and its 2D art stays in the source. The placeholder that
-  stood in for it is switched off (`emblem = false`) while the plate's
-  fit and print are still being settled, so every test print costs less
-  and the face is one flat surface.
+  **The right gang carries the coat of arms** as a raised relief: an ash
+  tree between a bear rampant (left, toward the toggle) and a fox
+  rampant (right), the three figures alone — no shield, no frame, and
+  no ground except a small patch of the rock mound kept under the
+  bear's front hind foot, where the sculpt hides the foot in the rock.
+  The art comes from the `coat-of-arms` skill's height map;
+  `emblem = false` drops it for a cheaper fit-test print.
 
 `part = "base" | "cover" | "both"` selects the layout; `"both"` is
 ~257 mm wide — render one part at a time for smaller beds.
@@ -83,12 +84,32 @@ travel fit outside the device envelope.
   ring and a stiffening rib can be without feeling flexy.
 - Toggle opening 11.5 × 25 through the face, left gang center
   (−23.02, 0).
-- No relief on the face: `emblem = false`, so the outer face is flat
-  and its highest point is the face itself. The placeholder geometry
-  (roundel plateau d 40 × 1.2, five-point star r 16 extruded 2.2 with a
-  55% taper, centre dome r 5 squashed to 2.5 tall, 5.9 proud in total)
-  stays in the source behind that flag. Turning it back on adds `emb_h`
-  to the stack and nothing else.
+- Coat-of-arms relief on the right gang, from
+  `../.claude/skills/coat-of-arms/assets/coat_of_arms_relief.png`
+  (`emb_png`, 720 × 413 px, `emb_px`) through `surface()`:
+  - **Width 72 (`emb_w`)**, the image edge to edge, centered on the gang
+    at (23.02, 0). That is as wide as the gang allows: the image's left
+    edge lands at x −13.0, 4.3 clear of the toggle opening's edge at
+    −17.3, and its right edge at 59.0, 2.7 short of the face chamfer at
+    61.7. The image is 1.743:1, so it stands 41.3 tall (y ±20.6), well
+    inside the face. The figures fill the image but for a 0.15 blank
+    pad on each side. One pixel is 0.1 mm; the slicer drops
+    detail narrower than one line (0.4), which costs the finest leaf
+    serrations and nothing else.
+  - **Peak 4.0 proud of the face (`emb_h`, 20 layers)**, gray 255 in the
+    map. The source plaque carves the peak at 0.162 of its width, which
+    is 7.4 at this size; 4.0 keeps the modeling legible at 54 % of that
+    depth without standing a finger's width off the wall. Every other
+    height scales with it: the bear's flank ~3.2, the tree's crown
+    ~1.5–2.0, the bear's far hind leg ~0.3.
+  - The height map's background plane sinks 0.05 (`emb_sink`) into the
+    face, and its solid underside a further 0.04, so the image's
+    rectangle adds nothing outside the figures and the union is clean.
+    The z scale is `(emb_h + emb_sink)/100` so the peak lands exactly
+    `emb_h` above the face.
+  - A height map has no undercuts by construction: every surface faces
+    up or is vertical, so it prints face-up unsupported, whatever the
+    sculpt's slopes.
 - Four bayonet slots through the side walls at y = ±28 (`hook_y`):
   a locked pocket fitting the lug with 0.3 clearance (`slot_clr`) on
   its sides and underside, and its upper end cut parallel to the lug's
@@ -239,8 +260,8 @@ travel fit outside the device envelope.
 - Cover back edge at z = 0.2 (`cov_back_z`) — one layer of reveal, so
   the wall surface is never the stop; retention lip 0.2–2.1; face inner
   **seats on the rim top and lug tops at 4.0** (no axial gap — the cleat
-  wedge closes it); face outer at 6.0, which is the plate's highest
-  point while the emblem is off.
+  wedge closes it); face outer at 6.0; relief peak at 10.0, the plate's
+  highest point.
 - The cleat stack sets the face height: reveal 0.2 + lip 1.9 +
   clearance 0.3 + lug 1.6 = 4.0. Shrinking the reveal moves that height
   into the lip, which is why the lip is 1.9 and not 1.3.
@@ -257,10 +278,9 @@ travel fit outside the device envelope.
   only); lift the two prop combs out through the open back, then peel
   the rib spine off tooth by tooth, before assembly. Use
   a brim — bed contact is the 1.6 wall ring plus the prop feet. The
-  visible face prints as clean top layers. Any relief added later must
-  stay self-supporting in this direction — ≤45° overhangs on an
-  upward-facing surface. The placeholder qualifies: vertical roundel
-  edge, inward-tapering star, and dome.
+  visible face prints as clean top layers, and the relief on top of it is
+  a height field — upward-facing or vertical everywhere — so it needs no
+  support in this direction either.
 - **Base prints back-down, support-free**; its downward faces are the
   45° countersinks, the bottom-left arm's 1.2-thick relief ceiling —
   43.5 long, broken into bridges of 8.5 or less by the fins, with the

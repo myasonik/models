@@ -1,5 +1,62 @@
 # Switch Plate — History
 
+## v024
+- The real coat of arms replaces the placeholder. The downloaded plaque
+  mesh (frame, swirl-textured field, rock mound, bear, ash tree, fox) now
+  lives in the `coat-of-arms` skill with a script that flattens it to a
+  height map and cuts away everything but the three figures: the frame by
+  rectangle, the field texture by height, the mound by a traced polyline,
+  with local thresholds where a foot stands in front of the rock. The
+  result is an 8-bit PNG that `surface()` reads. A second
+  cleanup pass fixed the bear: the low background web between and around
+  the forepaws is cut (the far foreleg stays), the mound skirt attached
+  left of the rear leg is cut, and the front hind foot's threshold
+  dropped from the rock level behind the toes to just above it, so the
+  toe curl survives instead of ending in a straight chop. A third
+  pass replaced the box zones at the bear's feet with one traced cut
+  line that hugs the rear leg, heel and toes, because the mound in
+  front of them sits at foot height and no threshold separates them; it
+  also cut the last low web strip below the forepaws. A fourth pass,
+  from a marked-up print: the blob-size floor drops 1500 → 400 px so
+  the upper paw's claw tuft survives on its own, a low fur band under
+  that paw's toes is restored, a generous patch of the mound comes back
+  under the front hind foot (the sculpt hides the foot in the rock, so
+  the patch errs large, to be trimmed by eye), and the export now
+  re-applies the cut mask after resampling, so cut edges print as clean
+  walls instead of soft gray aprons. A fifth pass, from a second marked
+  print: the restored fur band conjoined the bear to the tree and was
+  not bear, so it is cut again (the claw tuft island stays), and the
+  mound patch deepens to the art's bottom line, filling directly below
+  and in front of the front hind foot; a pinched notch keeps the other
+  foot's toe-tip crease clear of it. A sixth pass, after comparing all
+  states side by side: the paw fix had oscillated between all and
+  nothing — the restore zone now stops at x 860, keeping the fur fringe
+  on the toes without the bridge to the leaf — and the ground patch had
+  printed as a lump floating below the leg, because the sculpt's
+  leg-to-mound crease dips to field level and fell out of every
+  threshold. A restore polygon with a 0.030 height floor now fills that
+  crease, tying leg, ground and toes into one surface. A seventh pass:
+  the fur fringe's box edge left a boxy nub, so the box shrinks to
+  x 840 / y 572, and a second restore strip lays ground under the back
+  paws down to row 1214, joining the front shelf. Then hand mark-up
+  replaced guesswork: a Relief Marker page (an artifact the user paints
+  keep/remove strokes on, which saves them back) supplied 35 strokes
+  that the build now applies last — the remaining mound band is gone,
+  each figure stands free on small grass tufts, the fox's rear foot
+  came back, and the stray bits inside the tree crown are cut. The
+  result is a 720 × 413 PNG.
+- Placement: 72 wide, centered on the right gang, which is the most the
+  gang holds — 4.3 clear of the toggle opening, 2.7 short of the face
+  chamfer. 41.0 tall at the image's own 1.756:1.
+- Depth: the peak stands 4.0 proud (20 layers). The plaque's own
+  proportion gives 7.4 at this width; that is too much for a wall plate
+  already 6.0 off the wall, and 4.0 keeps the modeling readable. The
+  plate's highest point is 10.0 off the wall.
+- The placeholder roundel/star/dome and the hand-drawn 2D art are deleted
+  from the source; `emblem = false` now means a flat face.
+- Unchanged otherwise: the base, the props, the slots, and every z value
+  below the face.
+
 ## v023
 - Square again at the larger size: `cov_w` 125 → 129, matching `cov_h`.
   The outline is 129 × 129 and the base 125 × 120. Nothing in the z
