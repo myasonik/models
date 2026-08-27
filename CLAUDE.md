@@ -26,6 +26,18 @@ Two things change the geometry and are never safe to assume:
   the model is one solid or separate bodies per toolhead. The user will
   specify; ask if they haven't.
 
+## Clear filament
+
+When the user says a part prints in clear, transparent, or translucent
+filament (clear PETG is the usual case), run the `print-audit` skill's
+clarity review (section D) on the model before any other work on it.
+Light scatters at every boundary between extruded lines, so the wall
+must be a constant thickness equal to a whole number of line widths, with
+nothing else inside it. A wall that tapers, or that leaves room for a
+band of infill or gap fill, prints with a visible frosted band. The audit
+script measures wall thickness by height; read its table, do not guess
+from the parameters.
+
 ## Design for no supports
 
 Default to a model that prints unsupported in a single orientation:

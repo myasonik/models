@@ -7,6 +7,7 @@
 #   - bridge detection (downward-horizontal faces above the bed)
 #   - horizontal-hole candidates (teardrop advisory) from the .scad source
 #   - wall-width and parametric-style lints from the .scad source
+#   - wall thickness by height from STL slices (wall-thickness.py)
 # Cross-platform: macOS, Linux, Windows (Git Bash / MSYS2)
 
 set -uo pipefail
@@ -177,6 +178,14 @@ awk -v lw="$LINE_W" '
             printf "PASS: %s = %s (~%dx line width)\n", name, val, int(r+0.5)
     }
 }' "$INPUT"
+
+echo ""
+echo "--- [1] Wall thickness by height (slices the STL) ---"
+echo "Nearest-loop distance per Z sample. A hollow part's wall must stay a"
+echo "constant, whole number of ${LINE_W}mm lines; a drift or a line-count"
+echo "change mid-height shows as a visible band (see SKILL.md section D)."
+python3 "$(dirname "$0")/wall-thickness.py" "$STL" --line-width "$LINE_W" --samples 24 \
+    || echo "NOTE: wall-thickness.py failed; run it by hand on the exported STL."
 
 echo ""
 echo "--- [3,16] Horizontal-axis holes / curves (teardrop advisory) ---"
