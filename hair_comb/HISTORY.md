@@ -1,5 +1,19 @@
 # Hair Comb — History
 
+## Next — not yet a version
+
+Open items from handling the v005 print, to fix in v006:
+
+- **Tooth shape is wrong.** The lookup-table silhouette from v004 still
+  does not match the original. Re-read the profile against the red-outline
+  photograph before touching anything else.
+- **More arc across the tines.** The curve currently lives in the spine
+  only; the teeth run as straight prisms off it. The original curves
+  across the teeth as well, so the tooth field needs its own arc rather
+  than inheriting the spine's and then going flat.
+- **More ramp on the underside.** The concave face needs a longer, more
+  gradual ramp from spine to tip than v005 gives it.
+
 ## v005
 - `tooth_w_max` 3.7 to 4.225, on the user's call, so the teeth bulge
   further and the narrowest clear gap between two neighbouring teeth
